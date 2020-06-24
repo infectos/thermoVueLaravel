@@ -1908,6 +1908,7 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _leastSquares_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../leastSquares.js */ "./resources/js/leastSquares.js");
 //
 //
 //
@@ -1921,16 +1922,79 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     points: Array
   },
   data: function data() {
-    return {};
+    return {
+      currentTemperature: null,
+      maxTemperature: null
+    };
   },
   methods: {
     removePoint: function removePoint(index) {
       this.points.splice(index, 1);
+    }
+  },
+  computed: {
+    getFunction: function getFunction() {
+      var tensions = this.points.map(function (d) {
+        return Number(d.tension);
+      });
+      var times = this.points.map(function (d) {
+        return Number(d.average);
+      });
+      var func = Object(_leastSquares_js__WEBPACK_IMPORTED_MODULE_0__["default"])(tensions, times);
+      return func;
+    },
+    howMuch: function howMuch() {
+      var endOfMessage;
+      var difference = 5 - this.points.length;
+
+      if (difference == 1) {
+        endOfMessage = 'значение.';
+      } else if (difference == 5) {
+        endOfMessage = 'значений.';
+      } else {
+        endOfMessage = 'значения.';
+      }
+
+      return "\u0414\u043B\u044F \u0440\u0430\u0441\u0447\u0435\u0442\u0430 \u043A\u043E\u043D\u0441\u0442\u0430\u043D\u0442 \u0434\u043E\u0431\u0430\u0432\u044C\u0442\u0435 \u0435\u0449\u0435 ".concat(difference, " ") + endOfMessage;
+    },
+    getConstants: function getConstants() {
+      var temperature = this.currentTemperature + 273;
+      var maxTemperature = this.maxTemperature + 273;
+      var c = this.getFunction.m / (temperature - maxTemperature);
+      var d = -maxTemperature * this.getFunction.m / (temperature - maxTemperature);
+      var k = this.getFunction.b / (temperature - maxTemperature);
+      var mu = -maxTemperature * this.getFunction.b / (temperature - maxTemperature);
+      var lgt0 = k * maxTemperature + mu;
+      var t0 = Math.pow(10, lgt0);
+      return {
+        'c': c,
+        'd': d,
+        'k': k,
+        'mu': mu,
+        't0': t0
+      };
     }
   }
 });
@@ -1965,7 +2029,22 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      points: []
+      points: [{
+        'tension': 7.82,
+        'average': 0.15
+      }, {
+        'tension': 7.4,
+        'average': 0.3
+      }, {
+        'tension': 7,
+        'average': 0.76
+      }, {
+        'tension': 6.6,
+        'average': 0.86
+      }, {
+        'tension': 6.2,
+        'average': 3
+      }]
     };
   },
   methods: {
@@ -38447,10 +38526,90 @@ var render = function() {
           : _vm._e()
       }),
       0
-    )
+    ),
+    _vm._v(" "),
+    _c("div", [
+      _vm.points.length > 4
+        ? _c("h5", [_vm._v(_vm._s(_vm.getFunction))])
+        : _c("h5", [_vm._v(_vm._s(_vm.howMuch))]),
+      _vm._v(" "),
+      _c("div", { staticClass: "input-group" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.currentTemperature,
+              expression: "currentTemperature"
+            }
+          ],
+          staticClass: "form-control",
+          attrs: { type: "number" },
+          domProps: { value: _vm.currentTemperature },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.currentTemperature = $event.target.value
+            }
+          }
+        })
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "input-group" }, [
+        _vm._m(1),
+        _vm._v(" "),
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.maxTemperature,
+              expression: "maxTemperature"
+            }
+          ],
+          staticClass: "form-control",
+          attrs: { type: "number" },
+          domProps: { value: _vm.maxTemperature },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.maxTemperature = $event.target.value
+            }
+          }
+        })
+      ]),
+      _vm._v("\n    " + _vm._s(_vm.getConstants) + "\n  ")
+    ])
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [
+        _vm._v("Температура, [°C]")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [
+        _vm._v("Максимальная температура Tm, [°C]")
+      ])
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -51121,15 +51280,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************************************!*\
   !*** ./resources/js/components/MainComponent.vue ***!
   \***************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _MainComponent_vue_vue_type_template_id_3ee370e9___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MainComponent.vue?vue&type=template&id=3ee370e9& */ "./resources/js/components/MainComponent.vue?vue&type=template&id=3ee370e9&");
 /* harmony import */ var _MainComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MainComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/MainComponent.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _MainComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _MainComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -51159,7 +51317,7 @@ component.options.__file = "resources/js/components/MainComponent.vue"
 /*!****************************************************************************!*\
   !*** ./resources/js/components/MainComponent.vue?vue&type=script&lang=js& ***!
   \****************************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51256,6 +51414,59 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/leastSquares.js":
+/*!**************************************!*\
+  !*** ./resources/js/leastSquares.js ***!
+  \**************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function (X, Y) {
+  var ret = {};
+  var sumX = 0;
+  var sumY = 0;
+  var sumXY = 0;
+  var sumXSq = 0;
+  var N = X.length;
+
+  for (var i = 0; i < N; ++i) {
+    sumX += X[i];
+    sumY += Y[i];
+    sumXY += X[i] * Y[i];
+    sumXSq += X[i] * X[i];
+  }
+
+  ret.m = (sumXY - sumX * sumY / N) / (sumXSq - sumX * sumX / N);
+  ret.b = sumY / N - ret.m * sumX / N;
+
+  if (true) {
+    var varSum = 0;
+
+    for (var j = 0; j < N; ++j) {
+      varSum += (Y[j] - ret.b - ret.m * X[j]) * (Y[j] - ret.b - ret.m * X[j]);
+    }
+
+    var delta = N * sumXSq - sumX * sumX;
+    var vari = 1.0 / (N - 2.0) * varSum;
+    ret.bErr = Math.sqrt(vari / delta * sumXSq);
+    ret.mErr = Math.sqrt(N / delta * vari);
+  }
+
+  ret.calculate = function (x) {
+    return this.m * x + this.b;
+  };
+
+  ret.toString = function () {
+    return "y=".concat(this.m.toFixed(2), "*x+").concat(this.b.toFixed(2));
+  };
+
+  return ret;
+});
+
+/***/ }),
+
 /***/ "./resources/sass/app.scss":
 /*!*********************************!*\
   !*** ./resources/sass/app.scss ***!
@@ -51274,8 +51485,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/infectos/Projects/php/links/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/infectos/Projects/php/links/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/infectos/Projects/php/thermo/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/infectos/Projects/php/thermo/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
