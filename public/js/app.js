@@ -1909,6 +1909,22 @@ module.exports = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _leastSquares_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../leastSquares.js */ "./resources/js/leastSquares.js");
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+//
+//
+//
+//
 //
 //
 //
@@ -1988,12 +2004,79 @@ __webpack_require__.r(__webpack_exports__);
       var mu = -maxTemperature * this.getFunction.b / (temperature - maxTemperature);
       var lgt0 = k * maxTemperature + mu;
       var t0 = Math.pow(10, lgt0);
+      var sigma1 = Math.max.apply(Math, _toConsumableArray(this.points.map(function (e) {
+        return e.tension;
+      })));
+      var sigma2 = Math.min.apply(Math, _toConsumableArray(this.points.map(function (e) {
+        return e.tension;
+      })));
+      var t1 = Math.pow(10, this.getFunction.calculate(sigma1));
+      var t2 = Math.pow(10, this.getFunction.calculate(sigma2));
+      var r = 8.314 / 1000;
+      var b1 = r * Math.log(t1 / t0) / (Math.pow(this.currentTemperature, -1) - Math.pow(this.maxTemperature, -1));
+      var b2 = r * Math.log(t2 / t0) / (Math.pow(this.currentTemperature, -1) - Math.pow(this.maxTemperature, -1));
+      var gamma = (b1 - b2) / (sigma2 - sigma1);
+      var u0 = (b1 * sigma2 - b2 * sigma1) / (sigma2 - sigma1);
       return {
+        'temperature': temperature,
+        'maxTemperature': maxTemperature,
         'c': c,
         'd': d,
         'k': k,
         'mu': mu,
-        't0': t0
+        'lgt0': lgt0,
+        't0': t0,
+        'sigma1': sigma1,
+        'sigma2': sigma2,
+        't1': t1,
+        't2': t2,
+        'b1': b1,
+        'b2': b2,
+        'gamma': gamma,
+        'u0': u0
+      };
+    },
+    getConstants2: function getConstants2() {
+      var temperature = this.currentTemperature + 273;
+      temperature = Math.pow(temperature, -1);
+      var maxTemperature = this.maxTemperature + 273;
+      maxTemperature = Math.pow(maxTemperature, -1);
+      var c = this.getFunction.m / (temperature - maxTemperature);
+      var d = -maxTemperature * this.getFunction.m / (temperature - maxTemperature);
+      var k = this.getFunction.b / (temperature - maxTemperature);
+      var mu = -maxTemperature * this.getFunction.b / (temperature - maxTemperature);
+      var lgt0 = k * maxTemperature + mu;
+      var t0 = Math.pow(10, lgt0);
+      var sigma1 = Math.max.apply(Math, _toConsumableArray(this.points.map(function (e) {
+        return e.tension;
+      })));
+      var sigma2 = Math.min.apply(Math, _toConsumableArray(this.points.map(function (e) {
+        return e.tension;
+      })));
+      var t1 = Math.pow(10, this.getFunction.calculate(sigma1));
+      var t2 = Math.pow(10, this.getFunction.calculate(sigma2));
+      var r = 8.314 / 1000;
+      var b1 = r * Math.log(t1 / t0) / (Math.pow(this.currentTemperature, -1) - Math.pow(this.maxTemperature, -1));
+      var b2 = r * Math.log(t2 / t0) / (Math.pow(this.currentTemperature, -1) - Math.pow(this.maxTemperature, -1));
+      var gamma = (b1 - b2) / (sigma2 - sigma1);
+      var u0 = (b1 * sigma2 - b2 * sigma1) / (sigma2 - sigma1);
+      return {
+        'temperature': temperature,
+        'maxTemperature': maxTemperature,
+        'c': c,
+        'd': d,
+        'k': k,
+        'mu': mu,
+        'lgt0': lgt0,
+        't0': t0,
+        'sigma1': sigma1,
+        'sigma2': sigma2,
+        't1': t1,
+        't2': t2,
+        'b1': b1,
+        'b2': b2,
+        'gamma': gamma,
+        'u0': u0
       };
     }
   }
@@ -2030,20 +2113,20 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       points: [{
-        'tension': 7.82,
-        'average': 0.15
+        'tension': 6.3,
+        'average': 0.472
       }, {
-        'tension': 7.4,
-        'average': 0.3
+        'tension': 5.9,
+        'average': 0.842
       }, {
-        'tension': 7,
-        'average': 0.76
+        'tension': 5.6,
+        'average': 1.526
       }, {
-        'tension': 6.6,
-        'average': 0.86
+        'tension': 5.3,
+        'average': 2.54
       }, {
-        'tension': 6.2,
-        'average': 3
+        'tension': 5.0,
+        'average': 3.656
       }]
     };
   },
@@ -38540,9 +38623,10 @@ var render = function() {
           directives: [
             {
               name: "model",
-              rawName: "v-model",
+              rawName: "v-model.number",
               value: _vm.currentTemperature,
-              expression: "currentTemperature"
+              expression: "currentTemperature",
+              modifiers: { number: true }
             }
           ],
           staticClass: "form-control",
@@ -38553,7 +38637,10 @@ var render = function() {
               if ($event.target.composing) {
                 return
               }
-              _vm.currentTemperature = $event.target.value
+              _vm.currentTemperature = _vm._n($event.target.value)
+            },
+            blur: function($event) {
+              return _vm.$forceUpdate()
             }
           }
         })
@@ -38566,9 +38653,10 @@ var render = function() {
           directives: [
             {
               name: "model",
-              rawName: "v-model",
+              rawName: "v-model.number",
               value: _vm.maxTemperature,
-              expression: "maxTemperature"
+              expression: "maxTemperature",
+              modifiers: { number: true }
             }
           ],
           staticClass: "form-control",
@@ -38579,12 +38667,17 @@ var render = function() {
               if ($event.target.composing) {
                 return
               }
-              _vm.maxTemperature = $event.target.value
+              _vm.maxTemperature = _vm._n($event.target.value)
+            },
+            blur: function($event) {
+              return _vm.$forceUpdate()
             }
           }
         })
       ]),
-      _vm._v("\n    " + _vm._s(_vm.getConstants) + "\n  ")
+      _vm._v("\n    Прямая Т\n    " + _vm._s(_vm.getConstants) + "\n    "),
+      _c("br"),
+      _vm._v("\n    Обратная Т\n    " + _vm._s(_vm.getConstants2) + "\n  ")
     ])
   ])
 }

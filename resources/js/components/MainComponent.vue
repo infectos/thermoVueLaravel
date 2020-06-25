@@ -18,11 +18,11 @@ export default {
   data() {
     return {
       points: [
-        {'tension':7.82,'average':0.15},
-        {'tension':7.4,'average':0.3},
-        {'tension':7,'average':0.76},
-        {'tension':6.6,'average':0.86},
-        {'tension':6.2,'average':3}
+        {'tension':6.3,'average':0.472},
+        {'tension':5.9,'average':0.842},
+        {'tension':5.6,'average':1.526},
+        {'tension':5.3,'average':2.54},
+        {'tension':5.0,'average':3.656}
       ],
     }
   },
