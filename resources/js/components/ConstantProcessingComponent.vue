@@ -27,6 +27,9 @@
       <br>
       Обратная Т
       {{getConstants2}}
+      <button type="button" class="btn btn-primary" v-on:click="getFromServer">Список</button>
+      <button type="button" class="btn btn-primary" v-on:click="saveConstants">Сохранить в системе</button>
+      {{getCross}}
     </div>
   </div>
 </template>
@@ -46,7 +49,28 @@ export default {
   methods: {
     removePoint(index) {
       this.points.splice(index,1);
-    }
+    },
+    saveConstants(){
+      let jsonConstants = JSON.stringify(this.points);
+      axios.post('constants',{
+        'constantBody': jsonConstants,
+      }).then(function (response) {
+        console.log(response);
+      }).catch(function (error) {
+        console.log(error);
+      });
+    },
+    getFromServer() {
+    axios.get('constants')
+      .then(function (response) {
+        // handle success
+        console.log(response);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+    },
   },
   computed: {
     getFunction() {
@@ -148,6 +172,42 @@ export default {
         'gamma': gamma,
         'u0': u0,
       };
+    },
+    getCross() {
+      let temperature2 = (this.currentTemperature + 273) + 30;
+      let temperature1 = this.currentTemperature + 273;
+      let maxTemperature = this.maxTemperature + 273;
+      
+      let c = this.getFunction.m / (temperature1 - maxTemperature);
+      let d = (-maxTemperature * this.getFunction.m) / (temperature1 - maxTemperature);
+      let k = this.getFunction.b / (temperature1 - maxTemperature);
+      let mu = (-maxTemperature * this.getFunction.b) / (temperature1 - maxTemperature);
+      
+      let a1 = c * temperature1 + d;
+      let b1 = k * temperature1 + mu;
+
+      let a2 = c * temperature2 + d;
+      let b2 = k * temperature2 + mu;
+
+      let sigma = (b1 - b2)/(a2 - a1);
+      let lgt = a1*sigma + b1;
+
+      return {
+        'temp1': temperature1,
+        'temp2': temperature2,
+        'maxTemp': maxTemperature,
+        'c':c,
+        'd':d,
+        "k":k,
+        'mu':mu,
+        'a1':a1,
+        'b1':b1,
+        'a2': a2,
+        'b2':b2,
+        'sigma':sigma,
+        'lgt':lgt,
+      }
+
     }
   },
 

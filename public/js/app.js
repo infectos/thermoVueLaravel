@@ -1954,6 +1954,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
@@ -1968,6 +1971,25 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   methods: {
     removePoint: function removePoint(index) {
       this.points.splice(index, 1);
+    },
+    saveConstants: function saveConstants() {
+      var jsonConstants = JSON.stringify(this.points);
+      axios.post('constants', {
+        'constantBody': jsonConstants
+      }).then(function (response) {
+        console.log(response);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    getFromServer: function getFromServer() {
+      axios.get('constants').then(function (response) {
+        // handle success
+        console.log(response);
+      })["catch"](function (error) {
+        // handle error
+        console.log(error);
+      });
     }
   },
   computed: {
@@ -2078,6 +2100,36 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         'gamma': gamma,
         'u0': u0
       };
+    },
+    getCross: function getCross() {
+      var temperature2 = this.currentTemperature + 273 + 30;
+      var temperature1 = this.currentTemperature + 273;
+      var maxTemperature = this.maxTemperature + 273;
+      var c = this.getFunction.m / (temperature1 - maxTemperature);
+      var d = -maxTemperature * this.getFunction.m / (temperature1 - maxTemperature);
+      var k = this.getFunction.b / (temperature1 - maxTemperature);
+      var mu = -maxTemperature * this.getFunction.b / (temperature1 - maxTemperature);
+      var a1 = c * temperature1 + d;
+      var b1 = k * temperature1 + mu;
+      var a2 = c * temperature2 + d;
+      var b2 = k * temperature2 + mu;
+      var sigma = (b1 - b2) / (a2 - a1);
+      var lgt = a1 * sigma + b1;
+      return {
+        'temp1': temperature1,
+        'temp2': temperature2,
+        'maxTemp': maxTemperature,
+        'c': c,
+        'd': d,
+        "k": k,
+        'mu': mu,
+        'a1': a1,
+        'b1': b1,
+        'a2': a2,
+        'b2': b2,
+        'sigma': sigma,
+        'lgt': lgt
+      };
     }
   }
 });
@@ -2095,6 +2147,23 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _StatProcessingComponent_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./StatProcessingComponent.vue */ "./resources/js/components/StatProcessingComponent.vue");
 /* harmony import */ var _ConstantProcessingComponent_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ConstantProcessingComponent.vue */ "./resources/js/components/ConstantProcessingComponent.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2127,13 +2196,37 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         'tension': 5.0,
         'average': 3.656
-      }]
+      }],
+      savedList: []
     };
   },
   methods: {
     getPoint: function getPoint(point) {
       this.points.push(point);
+    },
+    getFromServer: function getFromServer() {
+      var _this = this;
+
+      axios.get('constants').then(function (response) {
+        // handle success
+        console.log(response);
+        _this.savedList = response.data;
+      })["catch"](function (error) {
+        // handle error
+        console.log(error);
+      });
+    },
+    deleteFromServer: function deleteFromServer(id) {
+      axios["delete"]("constants/".concat(id)).then(function (response) {
+        console.log(response);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+      this.getFromServer();
     }
+  },
+  created: function created() {
+    this.getFromServer();
   }
 });
 
@@ -38677,7 +38770,27 @@ var render = function() {
       ]),
       _vm._v("\n    Прямая Т\n    " + _vm._s(_vm.getConstants) + "\n    "),
       _c("br"),
-      _vm._v("\n    Обратная Т\n    " + _vm._s(_vm.getConstants2) + "\n  ")
+      _vm._v("\n    Обратная Т\n    " + _vm._s(_vm.getConstants2) + "\n    "),
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-primary",
+          attrs: { type: "button" },
+          on: { click: _vm.getFromServer }
+        },
+        [_vm._v("Список")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-primary",
+          attrs: { type: "button" },
+          on: { click: _vm.saveConstants }
+        },
+        [_vm._v("Сохранить в системе")]
+      ),
+      _vm._v("\n    " + _vm._s(_vm.getCross) + "\n  ")
     ])
   ])
 }
@@ -38724,16 +38837,62 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "row" },
-    [
-      _c("stat-processing-component", { on: { confirmPoint: _vm.getPoint } }),
-      _vm._v(" "),
-      _c("constant-processing-component", { attrs: { points: _vm.points } })
-    ],
-    1
-  )
+  return _c("div", { staticClass: "row justify-content-center" }, [
+    _vm.savedList.length > 0
+      ? _c("div", { staticClass: "col-2" }, [
+          _c(
+            "ul",
+            { staticClass: "list-group" },
+            _vm._l(_vm.savedList, function(constant, index) {
+              return _c("li", { staticClass: "list-group-item" }, [
+                _vm._v(
+                  "\n        " +
+                    _vm._s(JSON.parse(constant.body)) +
+                    "\n        "
+                ),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-outline-light  deleteBtn",
+                    attrs: { type: "button" },
+                    on: {
+                      click: function($event) {
+                        return _vm.deleteFromServer(constant.id)
+                      }
+                    }
+                  },
+                  [_vm._v("X")]
+                )
+              ])
+            }),
+            0
+          )
+        ])
+      : _vm._e(),
+    _vm._v(" "),
+    _c("div", { staticClass: "col-10" }, [
+      _c("div", { staticClass: "card" }, [
+        _c("div", { staticClass: "card-header" }, [_vm._v("Расчет")]),
+        _vm._v(" "),
+        _c("div", { staticClass: "card-body" }, [
+          _c(
+            "div",
+            { staticClass: "row" },
+            [
+              _c("stat-processing-component", {
+                on: { confirmPoint: _vm.getPoint }
+              }),
+              _vm._v(" "),
+              _c("constant-processing-component", {
+                attrs: { points: _vm.points }
+              })
+            ],
+            1
+          )
+        ])
+      ])
+    ])
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
