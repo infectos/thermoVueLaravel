@@ -1909,6 +1909,8 @@ module.exports = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _leastSquares_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../leastSquares.js */ "./resources/js/leastSquares.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -1921,6 +1923,24 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2038,47 +2058,49 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return "\u0414\u043B\u044F \u0440\u0430\u0441\u0447\u0435\u0442\u0430 \u043A\u043E\u043D\u0441\u0442\u0430\u043D\u0442 \u0434\u043E\u0431\u0430\u0432\u044C\u0442\u0435 \u0435\u0449\u0435 ".concat(difference, " ") + endOfMessage;
     },
     getConstants: function getConstants() {
+      var _ref;
+
       var temperature = this.currentTemperature + 273;
       var maxTemperature = this.maxTemperature + 273;
       var c = this.getFunction.m / (temperature - maxTemperature);
       var d = -maxTemperature * this.getFunction.m / (temperature - maxTemperature);
-      var a2 = c * this.currentTemperatureAdditionalPoint + d;
+      var a1 = this.getFunction.m;
+      var b1 = this.getFunction.b;
+      var a2 = c * (this.currentTemperatureAdditionalPoint + 273) + d;
       var b2 = this.additionalPoint.average - a2 * this.additionalPoint.tension;
-      /*
-      let sigma1 = Math.max(...this.points.map(e => e.tension));
-      let sigma2 = Math.min(...this.points.map(e => e.tension));
-      let t1 = Math.pow(10, this.getFunction.calculate(sigma1));
-      let t2 = Math.pow(10, this.getFunction.calculate(sigma2));
-      let r = 8.314/1000;
-      let b1 = (r * Math.log(t1/t0)) / (Math.pow(this.currentTemperature, -1) - Math.pow(this.maxTemperature, -1));
-      let b2 = (r * Math.log(t2/t0)) / (Math.pow(this.currentTemperature, -1) - Math.pow(this.maxTemperature, -1));
-      let gamma = (b1 - b2)/(sigma2 - sigma1); 
-      let u0 = (b1*sigma2 - b2*sigma1)/(sigma2 - sigma1); 
-      */
-
-      return {
+      var sigma0 = (b1 - b2) / (a2 - a1);
+      var lgt0 = a1 * sigma0 + b1;
+      var t0 = Math.pow(10, lgt0);
+      var sigma1 = Math.max.apply(Math, _toConsumableArray(this.points.map(function (e) {
+        return e.tension;
+      })));
+      var sigma2 = Math.min.apply(Math, _toConsumableArray(this.points.map(function (e) {
+        return e.tension;
+      })));
+      var t1 = Math.pow(10, this.getFunction.calculate(sigma1));
+      var t2 = Math.pow(10, this.getFunction.calculate(sigma2));
+      var r = 8.314 / 1000;
+      var s1 = r * Math.log(t1 / t0) / (Math.pow(temperature, -1) - Math.pow(maxTemperature, -1));
+      var s2 = r * Math.log(t2 / t0) / (Math.pow(temperature, -1) - Math.pow(maxTemperature, -1));
+      var gamma = (s1 - s2) / (sigma2 - sigma1);
+      var u0 = (s1 * sigma2 - s2 * sigma1) / (sigma2 - sigma1);
+      return _ref = {
         'temperature': temperature,
         'maxTemperature': maxTemperature,
         'c': c,
         'd': d,
+        'a1': a1,
+        'b1': b1,
         'a2': a2,
-        'b2': b2
-        /*
-        'k': k,
-        'mu': mu,
-        'lgt0':lgt0,
+        'b2': b2,
+        'sigma0': sigma0,
+        'lgt0': lgt0,
         't0': t0,
         'sigma1': sigma1,
         'sigma2': sigma2,
         't1': t1,
-        't2': t2,
-        'b1': b1,
-        'b2': b2,
-        'gamma': gamma,
-        'u0': u0,
-        */
-
-      };
+        't2': t2
+      }, _defineProperty(_ref, "b1", b1), _defineProperty(_ref, "b2", b2), _defineProperty(_ref, 'gamma', gamma), _defineProperty(_ref, 'u0', u0), _ref;
     },
     getConstants2: function getConstants2() {
       var temperature = this.currentTemperature + 273;
@@ -38870,7 +38892,23 @@ var render = function() {
         ])
       ])
     ]),
-    _vm._v("\n    Прямая Т\n    " + _vm._s(_vm.getConstants) + "\n    "),
+    _vm._v("\n  Прямая Т\n  " + _vm._s(_vm.getConstants) + "\n  "),
+    _c("table", { staticClass: "table table-sm" }, [
+      _vm._m(3),
+      _vm._v(" "),
+      _c("tbody", [
+        _c("tr", [
+          _c("td", [_vm._v(_vm._s(this.getConstants.t0))]),
+          _vm._v(" "),
+          _c("td", [_vm._v(_vm._s(this.maxTemperature + 273))]),
+          _vm._v(" "),
+          _c("td", [_vm._v(_vm._s(this.getConstants.u0.toFixed(3)))]),
+          _vm._v(" "),
+          _c("td", [_vm._v(_vm._s(this.getConstants.gamma.toFixed(3)))])
+        ])
+      ])
+    ]),
+    _vm._v(" "),
     _c(
       "button",
       {
@@ -38910,6 +38948,22 @@ var staticRenderFns = [
     return _c("div", { staticClass: "input-group-prepend" }, [
       _c("span", { staticClass: "input-group-text" }, [
         _vm._v("Температура, [°C]")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("t0")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Tm")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("U0")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("γ")])
       ])
     ])
   }
