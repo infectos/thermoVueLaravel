@@ -25,6 +25,11 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        Gate::define('create-constant', function ($user) {
+            return $user;
+        });
+        Gate::define('delete-constant', function ($user) {
+            return $user;
+        });
     }
 }

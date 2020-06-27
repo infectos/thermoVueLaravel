@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Constant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ConstantsController extends Controller
 {
@@ -38,7 +39,12 @@ class ConstantsController extends Controller
         $request->validate(['constantBody'=>'required']);
 
         $constant = new Constant(['body' => $request->get('constantBody')]);
-        $constant->save();
+        if (Gate::allows('create-constant')) {
+            $constant->save();
+        } else {
+            return response('Access denided', 403)->header('Content-Type', 'text/plain');
+        }
+        
     }
 
     /**
@@ -84,6 +90,11 @@ class ConstantsController extends Controller
     public function destroy($id)
     {
         $constant = Constant::find($id);
-        $constant->delete();
+        if (Gate::allows('delete-constant')) {
+            $constant->delete();
+        } else {
+            return response('Access denided', 403)->header('Content-Type', 'text/plain');
+        }
+        
     }
 }

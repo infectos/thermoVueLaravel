@@ -1,35 +1,49 @@
 <template>
   <div class="col">
-    <ul class="list-group">
-      <li class="list-group-item" v-for="(point, index) in points" v-if="points">
-        <b>{{point.average.toFixed(3)}}</b>, [lg]
-        <button type="button" class="btn btn-outline-light  deleteBtn" v-on:click="removePoint(index)">X</button>
-        <h6>Напряжение: {{point.tension}}, [МПа]</h6>
-      </li>
-    </ul>
-    <div>
-      <h5 v-if="points.length > 4">{{getFunction}}</h5>
-      <h5 v-else>{{howMuch}}</h5>
-      <div class="input-group" >
-        <div class="input-group-prepend">
-          <span class="input-group-text">Температура, [°C]</span>
+    <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Набор точек прямой</h5>
+          <ul class="list-group">
+            <li class="list-group-item" v-for="(point, index) in points" v-if="points">
+              <b>{{point.average.toFixed(3)}}</b>, [lg]
+              <button type="button" class="btn btn-outline-light  deleteBtn" v-on:click="removePoint(index)">X</button>
+              <h6>Напряжение: {{point.tension}}, [МПа]</h6>
+            </li>
+          </ul>
+          <div>
+            <h5 v-if="points.length > 4">{{getFunction}}</h5>
+            <h5 v-else>{{howMuch}}</h5>
+            <div class="input-group" >
+              <div class="input-group-prepend">
+                <span class="input-group-text">Температура, [°C]</span>
+              </div>
+              <input type="number" class="form-control" v-model.number="currentTemperature">
+            </div>
+            <div class="input-group" >
+              <div class="input-group-prepend">
+                <span class="input-group-text">Максимальная температура Tm, [°C]</span>
+              </div>
+              <input type="number" class="form-control" v-model.number="maxTemperature">
+            </div>
+          </div>
         </div>
-        <input type="number" class="form-control" v-model.number="currentTemperature">
-      </div>
-      <div class="input-group" >
-        <div class="input-group-prepend">
-          <span class="input-group-text">Максимальная температура Tm, [°C]</span>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Дополнительная точка</h5>
+        <b>{{additionalPoint.average.toFixed(3)}}</b>, [lg]
+        <h6>Напряжение: {{additionalPoint.tension}}, [МПа]</h6>
+        <div class="input-group" >
+          <div class="input-group-prepend">
+            <span class="input-group-text">Температура, [°C]</span>
+          </div>
+          <input type="number" class="form-control" v-model.number="currentTemperatureAdditionalPoint">
         </div>
-        <input type="number" class="form-control" v-model.number="maxTemperature">
       </div>
+    </div>
       Прямая Т
       {{getConstants}}
-      <br>
-      Обратная Т
-      {{getConstants2}}
-      <button type="button" class="btn btn-primary" v-on:click="getFromServer">Список</button>
       <button type="button" class="btn btn-primary" v-on:click="saveConstants">Сохранить в системе</button>
-      {{getCross}}
     </div>
   </div>
 </template>
@@ -38,12 +52,14 @@
 import leastSquares from "../leastSquares.js";
 export default {
   props:{
-    points: Array
+    points: Array,
+    additionalPoint: Object,
   },
   data(){
     return {
       currentTemperature: null,
       maxTemperature: null,
+      currentTemperatureAdditionalPoint: null,
     }
   },
   methods: {
@@ -54,8 +70,9 @@ export default {
       let jsonConstants = JSON.stringify(this.points);
       axios.post('constants',{
         'constantBody': jsonConstants,
-      }).then(function (response) {
+      }).then((response) => {
         console.log(response);
+        this.$emit('refreshList');
       }).catch(function (error) {
         console.log(error);
       });
@@ -97,11 +114,10 @@ export default {
       
       let c = this.getFunction.m / (temperature - maxTemperature);
       let d = (-maxTemperature * this.getFunction.m) / (temperature - maxTemperature);
-      let k = this.getFunction.b / (temperature - maxTemperature);
-      let mu = (-maxTemperature * this.getFunction.b) / (temperature - maxTemperature);
-      let lgt0 = k*maxTemperature + mu;
-      let t0 = Math.pow(10,lgt0);
 
+      let a2 = c * this.currentTemperatureAdditionalPoint + d;
+      let b2 = this.additionalPoint.average - a2 * this.additionalPoint.tension;
+      /*
       let sigma1 = Math.max(...this.points.map(e => e.tension));
       let sigma2 = Math.min(...this.points.map(e => e.tension));
       let t1 = Math.pow(10, this.getFunction.calculate(sigma1));
@@ -111,12 +127,16 @@ export default {
       let b2 = (r * Math.log(t2/t0)) / (Math.pow(this.currentTemperature, -1) - Math.pow(this.maxTemperature, -1));
       let gamma = (b1 - b2)/(sigma2 - sigma1); 
       let u0 = (b1*sigma2 - b2*sigma1)/(sigma2 - sigma1); 
+      */
 
       return {
         'temperature': temperature,
         'maxTemperature':maxTemperature,
         'c': c,
         'd': d,
+        'a2': a2,
+        'b2': b2,
+        /*
         'k': k,
         'mu': mu,
         'lgt0':lgt0,
@@ -129,6 +149,7 @@ export default {
         'b2': b2,
         'gamma': gamma,
         'u0': u0,
+        */
       };
     },
     getConstants2() {
@@ -173,42 +194,6 @@ export default {
         'u0': u0,
       };
     },
-    getCross() {
-      let temperature2 = (this.currentTemperature + 273) + 30;
-      let temperature1 = this.currentTemperature + 273;
-      let maxTemperature = this.maxTemperature + 273;
-      
-      let c = this.getFunction.m / (temperature1 - maxTemperature);
-      let d = (-maxTemperature * this.getFunction.m) / (temperature1 - maxTemperature);
-      let k = this.getFunction.b / (temperature1 - maxTemperature);
-      let mu = (-maxTemperature * this.getFunction.b) / (temperature1 - maxTemperature);
-      
-      let a1 = c * temperature1 + d;
-      let b1 = k * temperature1 + mu;
-
-      let a2 = c * temperature2 + d;
-      let b2 = k * temperature2 + mu;
-
-      let sigma = (b1 - b2)/(a2 - a1);
-      let lgt = a1*sigma + b1;
-
-      return {
-        'temp1': temperature1,
-        'temp2': temperature2,
-        'maxTemp': maxTemperature,
-        'c':c,
-        'd':d,
-        "k":k,
-        'mu':mu,
-        'a1':a1,
-        'b1':b1,
-        'a2': a2,
-        'b2':b2,
-        'sigma':sigma,
-        'lgt':lgt,
-      }
-
-    }
   },
 
 }

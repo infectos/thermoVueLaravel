@@ -1957,15 +1957,31 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
-    points: Array
+    points: Array,
+    additionalPoint: Object
   },
   data: function data() {
     return {
       currentTemperature: null,
-      maxTemperature: null
+      maxTemperature: null,
+      currentTemperatureAdditionalPoint: null
     };
   },
   methods: {
@@ -1973,11 +1989,15 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.points.splice(index, 1);
     },
     saveConstants: function saveConstants() {
+      var _this = this;
+
       var jsonConstants = JSON.stringify(this.points);
       axios.post('constants', {
         'constantBody': jsonConstants
       }).then(function (response) {
         console.log(response);
+
+        _this.$emit('refreshList');
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2022,31 +2042,31 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var maxTemperature = this.maxTemperature + 273;
       var c = this.getFunction.m / (temperature - maxTemperature);
       var d = -maxTemperature * this.getFunction.m / (temperature - maxTemperature);
-      var k = this.getFunction.b / (temperature - maxTemperature);
-      var mu = -maxTemperature * this.getFunction.b / (temperature - maxTemperature);
-      var lgt0 = k * maxTemperature + mu;
-      var t0 = Math.pow(10, lgt0);
-      var sigma1 = Math.max.apply(Math, _toConsumableArray(this.points.map(function (e) {
-        return e.tension;
-      })));
-      var sigma2 = Math.min.apply(Math, _toConsumableArray(this.points.map(function (e) {
-        return e.tension;
-      })));
-      var t1 = Math.pow(10, this.getFunction.calculate(sigma1));
-      var t2 = Math.pow(10, this.getFunction.calculate(sigma2));
-      var r = 8.314 / 1000;
-      var b1 = r * Math.log(t1 / t0) / (Math.pow(this.currentTemperature, -1) - Math.pow(this.maxTemperature, -1));
-      var b2 = r * Math.log(t2 / t0) / (Math.pow(this.currentTemperature, -1) - Math.pow(this.maxTemperature, -1));
-      var gamma = (b1 - b2) / (sigma2 - sigma1);
-      var u0 = (b1 * sigma2 - b2 * sigma1) / (sigma2 - sigma1);
+      var a2 = c * this.currentTemperatureAdditionalPoint + d;
+      var b2 = this.additionalPoint.average - a2 * this.additionalPoint.tension;
+      /*
+      let sigma1 = Math.max(...this.points.map(e => e.tension));
+      let sigma2 = Math.min(...this.points.map(e => e.tension));
+      let t1 = Math.pow(10, this.getFunction.calculate(sigma1));
+      let t2 = Math.pow(10, this.getFunction.calculate(sigma2));
+      let r = 8.314/1000;
+      let b1 = (r * Math.log(t1/t0)) / (Math.pow(this.currentTemperature, -1) - Math.pow(this.maxTemperature, -1));
+      let b2 = (r * Math.log(t2/t0)) / (Math.pow(this.currentTemperature, -1) - Math.pow(this.maxTemperature, -1));
+      let gamma = (b1 - b2)/(sigma2 - sigma1); 
+      let u0 = (b1*sigma2 - b2*sigma1)/(sigma2 - sigma1); 
+      */
+
       return {
         'temperature': temperature,
         'maxTemperature': maxTemperature,
         'c': c,
         'd': d,
+        'a2': a2,
+        'b2': b2
+        /*
         'k': k,
         'mu': mu,
-        'lgt0': lgt0,
+        'lgt0':lgt0,
         't0': t0,
         'sigma1': sigma1,
         'sigma2': sigma2,
@@ -2055,7 +2075,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         'b1': b1,
         'b2': b2,
         'gamma': gamma,
-        'u0': u0
+        'u0': u0,
+        */
+
       };
     },
     getConstants2: function getConstants2() {
@@ -2100,36 +2122,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         'gamma': gamma,
         'u0': u0
       };
-    },
-    getCross: function getCross() {
-      var temperature2 = this.currentTemperature + 273 + 30;
-      var temperature1 = this.currentTemperature + 273;
-      var maxTemperature = this.maxTemperature + 273;
-      var c = this.getFunction.m / (temperature1 - maxTemperature);
-      var d = -maxTemperature * this.getFunction.m / (temperature1 - maxTemperature);
-      var k = this.getFunction.b / (temperature1 - maxTemperature);
-      var mu = -maxTemperature * this.getFunction.b / (temperature1 - maxTemperature);
-      var a1 = c * temperature1 + d;
-      var b1 = k * temperature1 + mu;
-      var a2 = c * temperature2 + d;
-      var b2 = k * temperature2 + mu;
-      var sigma = (b1 - b2) / (a2 - a1);
-      var lgt = a1 * sigma + b1;
-      return {
-        'temp1': temperature1,
-        'temp2': temperature2,
-        'maxTemp': maxTemperature,
-        'c': c,
-        'd': d,
-        "k": k,
-        'mu': mu,
-        'a1': a1,
-        'b1': b1,
-        'a2': a2,
-        'b2': b2,
-        'sigma': sigma,
-        'lgt': lgt
-      };
     }
   }
 });
@@ -2171,6 +2163,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2181,6 +2186,48 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      rawPointsLine: [{
+        "time": 3
+      }, {
+        "time": 4
+      }, {
+        "time": 42
+      }, {
+        "time": 1
+      }, {
+        "time": 1
+      }, {
+        "time": 2
+      }, {
+        "time": 2
+      }, {
+        "time": 1
+      }],
+      rawPointsAdditionalPoint: [{
+        "time": 3
+      }, {
+        "time": 4
+      }, {
+        "time": 42
+      }, {
+        "time": 1
+      }, {
+        "time": 1
+      }, {
+        "time": 2
+      }, {
+        "time": 2
+      }, {
+        "time": 1
+      }, {
+        "time": 1
+      }, {
+        "time": 1
+      }, {
+        "time": 1
+      }, {
+        "time": 1
+      }],
       points: [{
         'tension': 6.3,
         'average': 0.472
@@ -2197,7 +2244,12 @@ __webpack_require__.r(__webpack_exports__);
         'tension': 5.0,
         'average': 3.656
       }],
-      savedList: []
+      additionalPoint: {
+        'tension': 5.8,
+        'average': 0.7984
+      },
+      savedList: [],
+      currentTab: 'line'
     };
   },
   methods: {
@@ -2223,6 +2275,14 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
       });
       this.getFromServer();
+    },
+    getAdditionalPoint: function getAdditionalPoint(point) {
+      this.additionalPoint = point;
+    }
+  },
+  computed: {
+    currentTabComponent: function currentTabComponent() {
+      return this.currentTab;
     }
   },
   created: function created() {
@@ -2310,25 +2370,12 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    minPointQuantity: Number,
+    rawPoints: Array
+  },
   data: function data() {
     return {
-      rawPoints: [{
-        "time": 3
-      }, {
-        "time": 4
-      }, {
-        "time": 42
-      }, {
-        "time": 1
-      }, {
-        "time": 1
-      }, {
-        "time": 2
-      }, {
-        "time": 2
-      }, {
-        "time": 1
-      }],
       tension: 7.82,
       grabbs: null,
       isConfirmed: false,
@@ -38673,125 +38720,166 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "col" }, [
-    _c(
-      "ul",
-      { staticClass: "list-group" },
-      _vm._l(_vm.points, function(point, index) {
-        return _vm.points
-          ? _c("li", { staticClass: "list-group-item" }, [
-              _c("b", [_vm._v(_vm._s(point.average.toFixed(3)))]),
-              _vm._v(", [lg]\n      "),
-              _c(
-                "button",
+    _c("div", { staticClass: "card" }, [
+      _c("div", { staticClass: "card-body" }, [
+        _c("h5", { staticClass: "card-title" }, [_vm._v("Набор точек прямой")]),
+        _vm._v(" "),
+        _c(
+          "ul",
+          { staticClass: "list-group" },
+          _vm._l(_vm.points, function(point, index) {
+            return _vm.points
+              ? _c("li", { staticClass: "list-group-item" }, [
+                  _c("b", [_vm._v(_vm._s(point.average.toFixed(3)))]),
+                  _vm._v(", [lg]\n            "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-outline-light  deleteBtn",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          return _vm.removePoint(index)
+                        }
+                      }
+                    },
+                    [_vm._v("X")]
+                  ),
+                  _vm._v(" "),
+                  _c("h6", [
+                    _vm._v("Напряжение: " + _vm._s(point.tension) + ", [МПа]")
+                  ])
+                ])
+              : _vm._e()
+          }),
+          0
+        ),
+        _vm._v(" "),
+        _c("div", [
+          _vm.points.length > 4
+            ? _c("h5", [_vm._v(_vm._s(_vm.getFunction))])
+            : _c("h5", [_vm._v(_vm._s(_vm.howMuch))]),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
                 {
-                  staticClass: "btn btn-outline-light  deleteBtn",
-                  attrs: { type: "button" },
-                  on: {
-                    click: function($event) {
-                      return _vm.removePoint(index)
-                    }
+                  name: "model",
+                  rawName: "v-model.number",
+                  value: _vm.currentTemperature,
+                  expression: "currentTemperature",
+                  modifiers: { number: true }
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "number" },
+              domProps: { value: _vm.currentTemperature },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
                   }
+                  _vm.currentTemperature = _vm._n($event.target.value)
                 },
-                [_vm._v("X")]
-              ),
-              _vm._v(" "),
-              _c("h6", [
-                _vm._v("Напряжение: " + _vm._s(point.tension) + ", [МПа]")
-              ])
-            ])
-          : _vm._e()
-      }),
-      0
-    ),
+                blur: function($event) {
+                  return _vm.$forceUpdate()
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group" }, [
+            _vm._m(1),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model.number",
+                  value: _vm.maxTemperature,
+                  expression: "maxTemperature",
+                  modifiers: { number: true }
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "number" },
+              domProps: { value: _vm.maxTemperature },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.maxTemperature = _vm._n($event.target.value)
+                },
+                blur: function($event) {
+                  return _vm.$forceUpdate()
+                }
+              }
+            })
+          ])
+        ])
+      ])
+    ]),
     _vm._v(" "),
-    _c("div", [
-      _vm.points.length > 4
-        ? _c("h5", [_vm._v(_vm._s(_vm.getFunction))])
-        : _c("h5", [_vm._v(_vm._s(_vm.howMuch))]),
-      _vm._v(" "),
-      _c("div", { staticClass: "input-group" }, [
-        _vm._m(0),
+    _c("div", { staticClass: "card" }, [
+      _c("div", { staticClass: "card-body" }, [
+        _c("h5", { staticClass: "card-title" }, [
+          _vm._v("Дополнительная точка")
+        ]),
         _vm._v(" "),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model.number",
-              value: _vm.currentTemperature,
-              expression: "currentTemperature",
-              modifiers: { number: true }
-            }
-          ],
-          staticClass: "form-control",
-          attrs: { type: "number" },
-          domProps: { value: _vm.currentTemperature },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.currentTemperature = _vm._n($event.target.value)
-            },
-            blur: function($event) {
-              return _vm.$forceUpdate()
-            }
-          }
-        })
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "input-group" }, [
-        _vm._m(1),
+        _c("b", [_vm._v(_vm._s(_vm.additionalPoint.average.toFixed(3)))]),
+        _vm._v(", [lg]\n      "),
+        _c("h6", [
+          _vm._v(
+            "Напряжение: " + _vm._s(_vm.additionalPoint.tension) + ", [МПа]"
+          )
+        ]),
         _vm._v(" "),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model.number",
-              value: _vm.maxTemperature,
-              expression: "maxTemperature",
-              modifiers: { number: true }
-            }
-          ],
-          staticClass: "form-control",
-          attrs: { type: "number" },
-          domProps: { value: _vm.maxTemperature },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
+        _c("div", { staticClass: "input-group" }, [
+          _vm._m(2),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model.number",
+                value: _vm.currentTemperatureAdditionalPoint,
+                expression: "currentTemperatureAdditionalPoint",
+                modifiers: { number: true }
               }
-              _vm.maxTemperature = _vm._n($event.target.value)
-            },
-            blur: function($event) {
-              return _vm.$forceUpdate()
+            ],
+            staticClass: "form-control",
+            attrs: { type: "number" },
+            domProps: { value: _vm.currentTemperatureAdditionalPoint },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.currentTemperatureAdditionalPoint = _vm._n(
+                  $event.target.value
+                )
+              },
+              blur: function($event) {
+                return _vm.$forceUpdate()
+              }
             }
-          }
-        })
-      ]),
-      _vm._v("\n    Прямая Т\n    " + _vm._s(_vm.getConstants) + "\n    "),
-      _c("br"),
-      _vm._v("\n    Обратная Т\n    " + _vm._s(_vm.getConstants2) + "\n    "),
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-primary",
-          attrs: { type: "button" },
-          on: { click: _vm.getFromServer }
-        },
-        [_vm._v("Список")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-primary",
-          attrs: { type: "button" },
-          on: { click: _vm.saveConstants }
-        },
-        [_vm._v("Сохранить в системе")]
-      ),
-      _vm._v("\n    " + _vm._s(_vm.getCross) + "\n  ")
-    ])
+          })
+        ])
+      ])
+    ]),
+    _vm._v("\n    Прямая Т\n    " + _vm._s(_vm.getConstants) + "\n    "),
+    _c(
+      "button",
+      {
+        staticClass: "btn btn-primary",
+        attrs: { type: "button" },
+        on: { click: _vm.saveConstants }
+      },
+      [_vm._v("Сохранить в системе")]
+    )
   ])
 }
 var staticRenderFns = [
@@ -38812,6 +38900,16 @@ var staticRenderFns = [
     return _c("div", { staticClass: "input-group-prepend" }, [
       _c("span", { staticClass: "input-group-text" }, [
         _vm._v("Максимальная температура Tm, [°C]")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-prepend" }, [
+      _c("span", { staticClass: "input-group-text" }, [
+        _vm._v("Температура, [°C]")
       ])
     ])
   }
@@ -38879,12 +38977,101 @@ var render = function() {
             "div",
             { staticClass: "row" },
             [
-              _c("stat-processing-component", {
-                on: { confirmPoint: _vm.getPoint }
-              }),
+              _c("div", { staticClass: "col" }, [
+                _c("nav", [
+                  _c(
+                    "div",
+                    {
+                      staticClass: "nav nav-tabs",
+                      attrs: { id: "nav-tab", role: "tablist" }
+                    },
+                    [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "nav-item nav-link active",
+                          attrs: {
+                            id: "nav-home-tab",
+                            "data-toggle": "tab",
+                            href: "#nav-home",
+                            role: "tab",
+                            "aria-controls": "nav-home",
+                            "aria-selected": "true"
+                          },
+                          on: {
+                            click: function($event) {
+                              _vm.currentTab = "line"
+                            }
+                          }
+                        },
+                        [_vm._v("Прямая")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "a",
+                        {
+                          staticClass: "nav-item nav-link",
+                          attrs: {
+                            id: "nav-profile-tab",
+                            "data-toggle": "tab",
+                            href: "#nav-profile",
+                            role: "tab",
+                            "aria-controls": "nav-profile",
+                            "aria-selected": "false"
+                          },
+                          on: {
+                            click: function($event) {
+                              _vm.currentTab = "point"
+                            }
+                          }
+                        },
+                        [_vm._v("Точка")]
+                      )
+                    ]
+                  )
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    staticClass: "tab-content",
+                    attrs: { id: "nav-tabContent" }
+                  },
+                  [
+                    _c(
+                      "keep-alive",
+                      [
+                        _vm.currentTabComponent == "line"
+                          ? _c("stat-processing-component", {
+                              key: "line",
+                              attrs: {
+                                minPointQuantity: 8,
+                                rawPoints: _vm.rawPointsLine
+                              },
+                              on: { confirmPoint: _vm.getPoint }
+                            })
+                          : _c("stat-processing-component", {
+                              key: "point",
+                              attrs: {
+                                minPointQuantity: 12,
+                                rawPoints: _vm.rawPointsAdditionalPoint
+                              },
+                              on: { confirmPoint: _vm.getAdditionalPoint }
+                            })
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                )
+              ]),
               _vm._v(" "),
               _c("constant-processing-component", {
-                attrs: { points: _vm.points }
+                attrs: {
+                  points: _vm.points,
+                  additionalPoint: _vm.additionalPoint
+                },
+                on: { refreshList: _vm.getFromServer }
               })
             ],
             1
@@ -38916,7 +39103,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "col" }, [
+  return _c("div", [
     _c("div", { staticClass: "input" }, [
       _c(
         "ol",
@@ -38975,7 +39162,7 @@ var render = function() {
                 }
               }),
               _vm._v(" Время,[с]\n      "),
-              _vm.rawPoints.length > 8
+              _vm.rawPoints.length > _vm.minPointQuantity
                 ? _c(
                     "button",
                     {

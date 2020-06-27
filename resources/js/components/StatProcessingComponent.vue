@@ -1,12 +1,12 @@
 <template>
-  <div class="col">
+  <div>
     <div class='input'>
       <ol>
         <input v-model.number='tension' type='number' step='any'> Напряжение,[МПа]
         <hr>
         <li v-for="(point, index) in rawPoints">
         <input v-model.number='point.time' type='number'> Время,[с]
-        <button type="button" class="btn btn-outline-light btn-sm" v-if="rawPoints.length > 8"
+        <button type="button" class="btn btn-outline-light btn-sm" v-if="rawPoints.length > minPointQuantity"
           v-on:click="removePoint(index)">X</button>
         </li>
         <hr>
@@ -56,25 +56,12 @@
 
 <script>
 export default {
-  data() {
+  props: {
+    minPointQuantity: Number,
+    rawPoints: Array,
+  },
+  data:function () {
     return {
-      rawPoints: [{
-          "time": 3
-        }, {
-          "time": 4
-        }, {
-          "time": 42
-        }, {
-          "time": 1
-        }, {
-          "time": 1
-        }, {
-          "time": 2
-        }, {
-          "time": 2
-        }, {
-          "time": 1
-        }],
       tension: 7.82,
       grabbs: null,
       isConfirmed: false,
