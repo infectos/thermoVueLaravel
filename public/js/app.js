@@ -1989,8 +1989,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
@@ -2266,7 +2264,8 @@ __webpack_require__.r(__webpack_exports__);
         'tension': 5.0,
         'average': 3.656
       }],
-      additionalPoint: {
+      additionalPoint: //{'tension':5.8,'average':0.7984},
+      {
         'tension': 5.8,
         'average': 0.7984
       },
@@ -2335,6 +2334,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
+//
 //
 //
 //
@@ -38892,7 +38892,7 @@ var render = function() {
         ])
       ])
     ]),
-    _vm._v("\n  Прямая Т\n  " + _vm._s(_vm.getConstants) + "\n  "),
+    _vm._v(" "),
     _c("table", { staticClass: "table table-sm" }, [
       _vm._m(3),
       _vm._v(" "),

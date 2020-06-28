@@ -39,6 +39,7 @@
       <h6>Коэффициент Граббса: {{grabbs.grabbs}}</h6>
       <h6 v-bind:class="grabbs.grabbsError ? 'text-danger' : 'text-success'">{{grabbs.errorMessage}}</h6>
       <button class="btn btn-danger" v-if='grabbs.grabbsError' v-on:click="deleteError(grabbs)">Удалить ошибку</button>
+      
     </div>
     <div class="stat" v-if="grabbs && !grabbs.grabbsError">
       <h6>Массив десятичных логарифмов: {{stat.array}}</h6>

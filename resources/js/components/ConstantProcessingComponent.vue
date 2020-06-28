@@ -41,8 +41,6 @@
         </div>
       </div>
     </div>
-    Прямая Т
-    {{getConstants}}
     <table class="table table-sm">
       <thead>
         <tr>

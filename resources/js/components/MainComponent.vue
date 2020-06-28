@@ -96,7 +96,8 @@ export default {
         {'tension':5.3,'average':2.54},
         {'tension':5.0,'average':3.656}
       ],
-      additionalPoint: {'tension':5.8,'average':0.7984},
+      additionalPoint: //{'tension':5.8,'average':0.7984},
+        {'tension':5.8,'average':0.7984},
       savedList: [],
       currentTab: 'line',
     }
