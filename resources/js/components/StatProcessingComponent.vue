@@ -31,23 +31,29 @@
       <button type="button" class="btn btn-primary" v-on:click="processData">Обработать данные</button>
     </div>
     <div class="grabbs" v-if="grabbs">
-      <h6>Массив десятичных логарифмов: {{grabbs.array}}</h6>
+      <!-- 
       <h6>Среднее значение: {{grabbs.average}}</h6>
       <h6>S: {{grabbs.s}}</h6>
       <h6>G1: {{grabbs.g1}}</h6>
       <h6>G2: {{grabbs.g2}}</h6>
       <h6>Коэффициент Граббса: {{grabbs.grabbs}}</h6>
+      -->
+      <h6>Массив десятичных логарифмов: {{grabbs.array}}</h6>
       <h6 v-bind:class="grabbs.grabbsError ? 'text-danger' : 'text-success'">{{grabbs.errorMessage}}</h6>
       <button class="btn btn-danger" v-if='grabbs.grabbsError' v-on:click="deleteError(grabbs)">Удалить ошибку</button>
       
     </div>
     <div class="stat" v-if="grabbs && !grabbs.grabbsError">
+      <!--
       <h6>Массив десятичных логарифмов: {{stat.array}}</h6>
       <h6>Среднее значение: {{stat.average}}</h6>
       <h6>S: {{stat.s}}</h6>
       <h6>Sx: {{stat.sx}}</h6>
       <h6>Коэффициент Стьюдента: {{stat.student}}</h6>
       <h6>Дельта: {{stat.delta}}</h6>
+      <h6>Интервал: {{stat.range}}</h6>
+      -->
+      <h6>Среднее значение: {{stat.average}}</h6>
       <h6>Интервал: {{stat.range}}</h6>
       <h6 v-bind:class="stat.cutArray.length > 0 ? 'text-danger' : 'text-success'">{{stat.message}}</h6>
       <button class="btn btn-warning" v-if='stat.cutArray.length > 0 && !isConfirmed' v-on:click="confirmPoint">Подтвердить точку</button>
@@ -63,7 +69,7 @@ export default {
   },
   data:function () {
     return {
-      tension: 7.82,
+      tension: null,
       grabbs: null,
       isConfirmed: false,
       selectGrabbs:"Свыше 1%",
@@ -103,7 +109,8 @@ export default {
       } else {
         message = `Все значения лежат в доверительном интервале`;
       }
-      return {
+
+      let ret = {
         'array': givenArray,
         'average': average,
         's': s,
@@ -115,6 +122,13 @@ export default {
         'cutArray': cutArray,
         'message': message,
       };
+
+      if (cutArray.length === 0 && !this.isConfirmed) {
+        ret.tension = this.tension;
+        this.isConfirmed = true;
+        this.$emit('confirmPoint', ret);
+      }
+      return ret;
     }
   },
   methods: {

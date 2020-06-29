@@ -20,9 +20,14 @@ Route::get('/', function () {
   return view('welcome', ['links' => $links]);
 });
 
-Auth::routes(['register' => false]);
+Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/admin', 'AdminController@index');
+Route::get('/admin/confirm/{id}', 'AdminController@confirmUser');
+
+
 
 Route::resource('constants','ConstantsController');
 

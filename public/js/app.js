@@ -1989,6 +1989,31 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
@@ -1999,7 +2024,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     return {
       currentTemperature: null,
       maxTemperature: null,
-      currentTemperatureAdditionalPoint: null
+      currentTemperatureAdditionalPoint: null,
+      materialName: null
     };
   },
   methods: {
@@ -2009,16 +2035,29 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     saveConstants: function saveConstants() {
       var _this = this;
 
-      var jsonConstants = JSON.stringify(this.points);
-      axios.post('constants', {
-        'constantBody': jsonConstants
-      }).then(function (response) {
-        console.log(response);
+      if (this.isDone) {
+        var ret = {};
+        ret.linePoints = this.points;
+        ret.additionalPoint = this.additionalPoint;
+        ret.name = this.materialName;
+        ret["function"] = this.getFunction.toString();
+        ret.lineTemperature = this.currentTemperature;
+        ret.maxTemperature = this.maxTemperature;
+        ret.additionalPointTemperature = this.currentTemperatureAdditionalPoint;
+        var jsonConstants = JSON.stringify(ret);
+        axios.post('constants', {
+          'constantBody': jsonConstants,
+          'materialName': this.materialName
+        }).then(function (response) {
+          console.log(response);
 
-        _this.$emit('refreshList');
-      })["catch"](function (error) {
-        console.log(error);
-      });
+          _this.$emit('refreshList');
+
+          $('#exampleModalCenter').modal('hide');
+        })["catch"](function (error) {
+          console.log(error);
+        });
+      } else {}
     },
     getFromServer: function getFromServer() {
       axios.get('constants').then(function (response) {
@@ -2098,50 +2137,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         'sigma2': sigma2,
         't1': t1,
         't2': t2
-      }, _defineProperty(_ref, "b1", b1), _defineProperty(_ref, "b2", b2), _defineProperty(_ref, 'gamma', gamma), _defineProperty(_ref, 'u0', u0), _ref;
+      }, _defineProperty(_ref, "b1", b1), _defineProperty(_ref, "b2", b2), _defineProperty(_ref, 'gamma', gamma), _defineProperty(_ref, 'u0', u0), _defineProperty(_ref, 'isAll', !Number.isNaN(u0) && !Number.isNaN(gamma) && !Number.isNaN(lgt0)), _ref;
     },
-    getConstants2: function getConstants2() {
-      var temperature = this.currentTemperature + 273;
-      temperature = Math.pow(temperature, -1);
-      var maxTemperature = this.maxTemperature + 273;
-      maxTemperature = Math.pow(maxTemperature, -1);
-      var c = this.getFunction.m / (temperature - maxTemperature);
-      var d = -maxTemperature * this.getFunction.m / (temperature - maxTemperature);
-      var k = this.getFunction.b / (temperature - maxTemperature);
-      var mu = -maxTemperature * this.getFunction.b / (temperature - maxTemperature);
-      var lgt0 = k * maxTemperature + mu;
-      var t0 = Math.pow(10, lgt0);
-      var sigma1 = Math.max.apply(Math, _toConsumableArray(this.points.map(function (e) {
-        return e.tension;
-      })));
-      var sigma2 = Math.min.apply(Math, _toConsumableArray(this.points.map(function (e) {
-        return e.tension;
-      })));
-      var t1 = Math.pow(10, this.getFunction.calculate(sigma1));
-      var t2 = Math.pow(10, this.getFunction.calculate(sigma2));
-      var r = 8.314 / 1000;
-      var b1 = r * Math.log(t1 / t0) / (Math.pow(this.currentTemperature, -1) - Math.pow(this.maxTemperature, -1));
-      var b2 = r * Math.log(t2 / t0) / (Math.pow(this.currentTemperature, -1) - Math.pow(this.maxTemperature, -1));
-      var gamma = (b1 - b2) / (sigma2 - sigma1);
-      var u0 = (b1 * sigma2 - b2 * sigma1) / (sigma2 - sigma1);
-      return {
-        'temperature': temperature,
-        'maxTemperature': maxTemperature,
-        'c': c,
-        'd': d,
-        'k': k,
-        'mu': mu,
-        'lgt0': lgt0,
-        't0': t0,
-        'sigma1': sigma1,
-        'sigma2': sigma2,
-        't1': t1,
-        't2': t2,
-        'b1': b1,
-        'b2': b2,
-        'gamma': gamma,
-        'u0': u0
-      };
+    isDone: function isDone() {
+      return this.materialName && !Number.isNaN(this.getConstants.t0) && !Number.isNaN(this.getConstants.u0) && !Number.isNaN(this.getConstants.gamma);
     }
   }
 });
@@ -2196,6 +2195,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2207,46 +2208,46 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       rawPointsLine: [{
-        "time": 3
+        "time": null
       }, {
-        "time": 4
+        "time": null
       }, {
-        "time": 42
+        "time": null
       }, {
-        "time": 1
+        "time": null
       }, {
-        "time": 1
+        "time": null
       }, {
-        "time": 2
+        "time": null
       }, {
-        "time": 2
+        "time": null
       }, {
-        "time": 1
+        "time": null
       }],
       rawPointsAdditionalPoint: [{
-        "time": 3
+        "time": null
       }, {
-        "time": 4
+        "time": null
       }, {
-        "time": 42
+        "time": null
       }, {
-        "time": 1
+        "time": null
       }, {
-        "time": 1
+        "time": null
       }, {
-        "time": 2
+        "time": null
       }, {
-        "time": 2
+        "time": null
       }, {
-        "time": 1
+        "time": null
       }, {
-        "time": 1
+        "time": null
       }, {
-        "time": 1
+        "time": null
       }, {
-        "time": 1
+        "time": null
       }, {
-        "time": 1
+        "time": null
       }],
       points: [{
         'tension': 6.3,
@@ -2263,12 +2264,13 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         'tension': 5.0,
         'average': 3.656
-      }],
-      additionalPoint: //{'tension':5.8,'average':0.7984},
-      {
+      }] //[]
+      ,
+      additionalPoint: {
         'tension': 5.8,
         'average': 0.7984
       },
+      //null,
       savedList: [],
       currentTab: 'line'
     };
@@ -2391,6 +2393,12 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     minPointQuantity: Number,
@@ -2398,7 +2406,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   },
   data: function data() {
     return {
-      tension: 7.82,
+      tension: null,
       grabbs: null,
       isConfirmed: false,
       selectGrabbs: "Свыше 1%",
@@ -2442,7 +2450,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         message = "\u0412\u0441\u0435 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F \u043B\u0435\u0436\u0430\u0442 \u0432 \u0434\u043E\u0432\u0435\u0440\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u043C \u0438\u043D\u0442\u0435\u0440\u0432\u0430\u043B\u0435";
       }
 
-      return {
+      var ret = {
         'array': givenArray,
         'average': average,
         's': s,
@@ -2454,6 +2462,14 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         'cutArray': cutArray,
         'message': message
       };
+
+      if (cutArray.length === 0 && !this.isConfirmed) {
+        ret.tension = this.tension;
+        this.isConfirmed = true;
+        this.$emit('confirmPoint', ret);
+      }
+
+      return ret;
     }
   },
   methods: {
@@ -38782,141 +38798,235 @@ var render = function() {
             ? _c("h5", [_vm._v(_vm._s(_vm.getFunction))])
             : _c("h5", [_vm._v(_vm._s(_vm.howMuch))]),
           _vm._v(" "),
-          _c("div", { staticClass: "input-group" }, [
-            _vm._m(0),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model.number",
-                  value: _vm.currentTemperature,
-                  expression: "currentTemperature",
-                  modifiers: { number: true }
-                }
-              ],
-              staticClass: "form-control",
-              attrs: { type: "number" },
-              domProps: { value: _vm.currentTemperature },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
+          _vm.points.length > 4
+            ? _c("div", { staticClass: "input-group" }, [
+                _vm._m(0),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model.number",
+                      value: _vm.currentTemperature,
+                      expression: "currentTemperature",
+                      modifiers: { number: true }
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: { type: "number" },
+                  domProps: { value: _vm.currentTemperature },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.currentTemperature = _vm._n($event.target.value)
+                    },
+                    blur: function($event) {
+                      return _vm.$forceUpdate()
+                    }
                   }
-                  _vm.currentTemperature = _vm._n($event.target.value)
-                },
-                blur: function($event) {
-                  return _vm.$forceUpdate()
-                }
-              }
-            })
-          ]),
+                })
+              ])
+            : _vm._e(),
           _vm._v(" "),
-          _c("div", { staticClass: "input-group" }, [
-            _vm._m(1),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model.number",
-                  value: _vm.maxTemperature,
-                  expression: "maxTemperature",
-                  modifiers: { number: true }
-                }
-              ],
-              staticClass: "form-control",
-              attrs: { type: "number" },
-              domProps: { value: _vm.maxTemperature },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
+          _vm.points.length > 4
+            ? _c("div", { staticClass: "input-group" }, [
+                _vm._m(1),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model.number",
+                      value: _vm.maxTemperature,
+                      expression: "maxTemperature",
+                      modifiers: { number: true }
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: { type: "number" },
+                  domProps: { value: _vm.maxTemperature },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.maxTemperature = _vm._n($event.target.value)
+                    },
+                    blur: function($event) {
+                      return _vm.$forceUpdate()
+                    }
                   }
-                  _vm.maxTemperature = _vm._n($event.target.value)
-                },
-                blur: function($event) {
-                  return _vm.$forceUpdate()
-                }
-              }
-            })
-          ])
+                })
+              ])
+            : _vm._e()
         ])
       ])
     ]),
     _vm._v(" "),
     _c("div", { staticClass: "card" }, [
-      _c("div", { staticClass: "card-body" }, [
-        _c("h5", { staticClass: "card-title" }, [
-          _vm._v("Дополнительная точка")
-        ]),
-        _vm._v(" "),
-        _c("b", [_vm._v(_vm._s(_vm.additionalPoint.average.toFixed(3)))]),
-        _vm._v(", [lg]\n      "),
-        _c("h6", [
-          _vm._v(
-            "Напряжение: " + _vm._s(_vm.additionalPoint.tension) + ", [МПа]"
-          )
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "input-group" }, [
-          _vm._m(2),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model.number",
-                value: _vm.currentTemperatureAdditionalPoint,
-                expression: "currentTemperatureAdditionalPoint",
-                modifiers: { number: true }
-              }
-            ],
-            staticClass: "form-control",
-            attrs: { type: "number" },
-            domProps: { value: _vm.currentTemperatureAdditionalPoint },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
+      _vm.additionalPoint
+        ? _c("div", { staticClass: "card-body" }, [
+            _c("h5", { staticClass: "card-title" }, [
+              _vm._v("Дополнительная точка")
+            ]),
+            _vm._v(" "),
+            _c("b", [_vm._v(_vm._s(_vm.additionalPoint.average.toFixed(3)))]),
+            _vm._v(", [lg]\n      "),
+            _c("h6", [
+              _vm._v(
+                "Напряжение: " + _vm._s(_vm.additionalPoint.tension) + ", [МПа]"
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "input-group" }, [
+              _vm._m(2),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model.number",
+                    value: _vm.currentTemperatureAdditionalPoint,
+                    expression: "currentTemperatureAdditionalPoint",
+                    modifiers: { number: true }
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: { type: "number" },
+                domProps: { value: _vm.currentTemperatureAdditionalPoint },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.currentTemperatureAdditionalPoint = _vm._n(
+                      $event.target.value
+                    )
+                  },
+                  blur: function($event) {
+                    return _vm.$forceUpdate()
+                  }
                 }
-                _vm.currentTemperatureAdditionalPoint = _vm._n(
-                  $event.target.value
-                )
-              },
-              blur: function($event) {
-                return _vm.$forceUpdate()
-              }
-            }
-          })
-        ])
-      ])
+              })
+            ])
+          ])
+        : _c("div", { staticClass: "card-body" }, [
+            _c("h5", [
+              _vm._v("Для расчета необходимо добавить дополнительную точку.")
+            ])
+          ])
     ]),
     _vm._v(" "),
-    _c("table", { staticClass: "table table-sm" }, [
-      _vm._m(3),
-      _vm._v(" "),
-      _c("tbody", [
-        _c("tr", [
-          _c("td", [_vm._v(_vm._s(this.getConstants.t0))]),
+    _vm.additionalPoint && _vm.points.length > 4
+      ? _c("table", { staticClass: "table table-sm" }, [
+          _vm._m(3),
           _vm._v(" "),
-          _c("td", [_vm._v(_vm._s(this.maxTemperature + 273))]),
-          _vm._v(" "),
-          _c("td", [_vm._v(_vm._s(this.getConstants.u0.toFixed(3)))]),
-          _vm._v(" "),
-          _c("td", [_vm._v(_vm._s(this.getConstants.gamma.toFixed(3)))])
+          _c("tbody", [
+            _c("tr", [
+              _c("td", [_vm._v(_vm._s(this.getConstants.t0))]),
+              _vm._v(" "),
+              _c("td", [_vm._v(_vm._s(this.maxTemperature + 273))]),
+              _vm._v(" "),
+              _c("td", [_vm._v(_vm._s(this.getConstants.u0.toFixed(3)))]),
+              _vm._v(" "),
+              _c("td", [_vm._v(_vm._s(this.getConstants.gamma.toFixed(3)))])
+            ])
+          ])
         ])
-      ])
-    ]),
+      : _vm._e(),
+    _vm._v(" "),
+    _vm.additionalPoint &&
+    _vm.points.length > 4 &&
+    _vm.currentTemperature &&
+    _vm.maxTemperature &&
+    _vm.currentTemperatureAdditionalPoint
+      ? _c(
+          "button",
+          {
+            staticClass: "btn btn-primary",
+            attrs: {
+              type: "button",
+              "data-toggle": "modal",
+              "data-target": "#exampleModalCenter"
+            }
+          },
+          [_vm._v("Сохранить в системе")]
+        )
+      : _vm._e(),
     _vm._v(" "),
     _c(
-      "button",
+      "div",
       {
-        staticClass: "btn btn-primary",
-        attrs: { type: "button" },
-        on: { click: _vm.saveConstants }
+        staticClass: "modal fade",
+        attrs: {
+          id: "exampleModalCenter",
+          tabindex: "-1",
+          role: "dialog",
+          "aria-labelledby": "exampleModalCenterTitle",
+          "aria-hidden": "true"
+        }
       },
-      [_vm._v("Сохранить в системе")]
+      [
+        _c(
+          "div",
+          {
+            staticClass: "modal-dialog modal-dialog-centered",
+            attrs: { role: "document" }
+          },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _vm._m(4),
+              _vm._v(" "),
+              _c("div", { staticClass: "modal-body" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.materialName,
+                      expression: "materialName"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: { type: "text" },
+                  domProps: { value: _vm.materialName },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.materialName = $event.target.value
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "modal-footer" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-secondary",
+                    attrs: { type: "button", "data-dismiss": "modal" }
+                  },
+                  [_vm._v("Закрыть")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: { type: "button" },
+                    on: { click: _vm.saveConstants }
+                  },
+                  [_vm._v("Сохранить")]
+                )
+              ])
+            ])
+          ]
+        )
+      ]
     )
   ])
 }
@@ -38966,6 +39076,31 @@ var staticRenderFns = [
         _c("th", { attrs: { scope: "col" } }, [_vm._v("γ")])
       ])
     ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c(
+        "h5",
+        { staticClass: "modal-title", attrs: { id: "exampleModalLongTitle" } },
+        [_vm._v("Введите название материала")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      )
+    ])
   }
 ]
 render._withStripped = true
@@ -38997,11 +39132,12 @@ var render = function() {
             { staticClass: "list-group" },
             _vm._l(_vm.savedList, function(constant, index) {
               return _c("li", { staticClass: "list-group-item" }, [
-                _vm._v(
-                  "\n        " +
-                    _vm._s(JSON.parse(constant.body)) +
-                    "\n        "
-                ),
+                _c("h5", [_vm._v(_vm._s(constant.name))]),
+                _vm._v(" "),
+                _c("h6", [_vm._v(_vm._s(JSON.parse(constant.body).function))]),
+                _vm._v(" "),
+                _c("h6", [_vm._v(_vm._s(constant.created_at))]),
+                _vm._v(" "),
                 _c(
                   "button",
                   {
@@ -39352,18 +39488,6 @@ var render = function() {
             _vm._v("Массив десятичных логарифмов: " + _vm._s(_vm.grabbs.array))
           ]),
           _vm._v(" "),
-          _c("h6", [_vm._v("Среднее значение: " + _vm._s(_vm.grabbs.average))]),
-          _vm._v(" "),
-          _c("h6", [_vm._v("S: " + _vm._s(_vm.grabbs.s))]),
-          _vm._v(" "),
-          _c("h6", [_vm._v("G1: " + _vm._s(_vm.grabbs.g1))]),
-          _vm._v(" "),
-          _c("h6", [_vm._v("G2: " + _vm._s(_vm.grabbs.g2))]),
-          _vm._v(" "),
-          _c("h6", [
-            _vm._v("Коэффициент Граббса: " + _vm._s(_vm.grabbs.grabbs))
-          ]),
-          _vm._v(" "),
           _c(
             "h6",
             { class: _vm.grabbs.grabbsError ? "text-danger" : "text-success" },
@@ -39389,21 +39513,7 @@ var render = function() {
     _vm._v(" "),
     _vm.grabbs && !_vm.grabbs.grabbsError
       ? _c("div", { staticClass: "stat" }, [
-          _c("h6", [
-            _vm._v("Массив десятичных логарифмов: " + _vm._s(_vm.stat.array))
-          ]),
-          _vm._v(" "),
           _c("h6", [_vm._v("Среднее значение: " + _vm._s(_vm.stat.average))]),
-          _vm._v(" "),
-          _c("h6", [_vm._v("S: " + _vm._s(_vm.stat.s))]),
-          _vm._v(" "),
-          _c("h6", [_vm._v("Sx: " + _vm._s(_vm.stat.sx))]),
-          _vm._v(" "),
-          _c("h6", [
-            _vm._v("Коэффициент Стьюдента: " + _vm._s(_vm.stat.student))
-          ]),
-          _vm._v(" "),
-          _c("h6", [_vm._v("Дельта: " + _vm._s(_vm.stat.delta))]),
           _vm._v(" "),
           _c("h6", [_vm._v("Интервал: " + _vm._s(_vm.stat.range))]),
           _vm._v(" "),

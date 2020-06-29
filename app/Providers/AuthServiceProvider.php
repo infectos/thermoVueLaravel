@@ -31,5 +31,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('delete-constant', function ($user) {
             return $user;
         });
+        Gate::define('confirm-users', function ($user) {
+            return $user->isAdmin;
+        });
     }
 }

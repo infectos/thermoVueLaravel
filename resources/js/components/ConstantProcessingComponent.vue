@@ -13,13 +13,13 @@
           <div>
             <h5 v-if="points.length > 4">{{getFunction}}</h5>
             <h5 v-else>{{howMuch}}</h5>
-            <div class="input-group" >
+            <div class="input-group" v-if="points.length > 4">
               <div class="input-group-prepend">
                 <span class="input-group-text">Температура, [°C]</span>
               </div>
               <input type="number" class="form-control" v-model.number="currentTemperature">
             </div>
-            <div class="input-group" >
+            <div class="input-group" v-if="points.length > 4">
               <div class="input-group-prepend">
                 <span class="input-group-text">Максимальная температура Tm, [°C]</span>
               </div>
@@ -29,7 +29,7 @@
         </div>
     </div>
     <div class="card">
-      <div class="card-body">
+      <div class="card-body" v-if="additionalPoint">
         <h5 class="card-title">Дополнительная точка</h5>
         <b>{{additionalPoint.average.toFixed(3)}}</b>, [lg]
         <h6>Напряжение: {{additionalPoint.tension}}, [МПа]</h6>
@@ -40,8 +40,11 @@
           <input type="number" class="form-control" v-model.number="currentTemperatureAdditionalPoint">
         </div>
       </div>
+      <div class="card-body" v-else>
+        <h5>Для расчета необходимо добавить дополнительную точку.</h5>
+      </div>
     </div>
-    <table class="table table-sm">
+    <table class="table table-sm" v-if="additionalPoint && points.length > 4">
       <thead>
         <tr>
           <th scope="col">t0</th>
@@ -59,7 +62,29 @@
         </tr>
       </tbody>
     </table>
-      <button type="button" class="btn btn-primary" v-on:click="saveConstants">Сохранить в системе</button>
+
+    <!-- Button trigger modal -->
+    <button v-if="additionalPoint && points.length > 4 && currentTemperature && maxTemperature && currentTemperatureAdditionalPoint" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Сохранить в системе</button>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Введите название материала</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <input type="text" class="form-control" v-model="materialName">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+            <button type="button" class="btn btn-primary" v-on:click="saveConstants">Сохранить</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -76,6 +101,7 @@ export default {
       currentTemperature: null,
       maxTemperature: null,
       currentTemperatureAdditionalPoint: null,
+      materialName: null,
     }
   },
   methods: {
@@ -83,15 +109,30 @@ export default {
       this.points.splice(index,1);
     },
     saveConstants(){
-      let jsonConstants = JSON.stringify(this.points);
-      axios.post('constants',{
-        'constantBody': jsonConstants,
-      }).then((response) => {
-        console.log(response);
-        this.$emit('refreshList');
-      }).catch(function (error) {
-        console.log(error);
-      });
+      if (this.isDone) {
+        let ret = {};
+        ret.linePoints = this.points;
+        ret.additionalPoint = this.additionalPoint;
+        ret.name = this.materialName;
+        ret.function = this.getFunction.toString();
+        ret.lineTemperature = this.currentTemperature;
+        ret.maxTemperature = this.maxTemperature;
+        ret.additionalPointTemperature = this.currentTemperatureAdditionalPoint;
+
+        let jsonConstants = JSON.stringify(ret);
+        axios.post('constants',{
+          'constantBody': jsonConstants,
+          'materialName': this.materialName,
+        }).then((response) => {
+          console.log(response);
+          this.$emit('refreshList');
+          $('#exampleModalCenter').modal('hide');
+        }).catch(function (error) {
+          console.log(error);
+        });
+      } else {
+        
+      }
     },
     getFromServer() {
     axios.get('constants')
@@ -171,50 +212,15 @@ export default {
         'b2': b2,
         'gamma': gamma,
         'u0': u0,
+        'isAll': !Number.isNaN(u0) && !Number.isNaN(gamma) && !Number.isNaN(lgt0),
       };
     },
-    getConstants2() {
-      let temperature = this.currentTemperature + 273;
-      temperature = Math.pow(temperature, -1);
-      let maxTemperature = this.maxTemperature + 273;
-      maxTemperature = Math.pow(maxTemperature, -1); 
-
-      let c = this.getFunction.m / (temperature - maxTemperature);
-      let d = (-maxTemperature * this.getFunction.m) / (temperature - maxTemperature);
-      let k = this.getFunction.b / (temperature - maxTemperature);
-      let mu = (-maxTemperature * this.getFunction.b) / (temperature - maxTemperature);
-      let lgt0 = k*maxTemperature + mu;
-      let t0 = Math.pow(10,lgt0);
-
-      let sigma1 = Math.max(...this.points.map(e => e.tension));
-      let sigma2 = Math.min(...this.points.map(e => e.tension));
-      let t1 = Math.pow(10, this.getFunction.calculate(sigma1));
-      let t2 = Math.pow(10, this.getFunction.calculate(sigma2));
-      let r = 8.314/1000;
-      let b1 = (r * Math.log(t1/t0)) / (Math.pow(this.currentTemperature, -1) - Math.pow(this.maxTemperature, -1));
-      let b2 = (r * Math.log(t2/t0)) / (Math.pow(this.currentTemperature, -1) - Math.pow(this.maxTemperature, -1));
-      let gamma = (b1 - b2)/(sigma2 - sigma1); 
-      let u0 = (b1*sigma2 - b2*sigma1)/(sigma2 - sigma1); 
-
-      return {
-        'temperature': temperature,
-        'maxTemperature':maxTemperature,
-        'c': c,
-        'd': d,
-        'k': k,
-        'mu': mu,
-        'lgt0':lgt0,
-        't0': t0,
-        'sigma1': sigma1,
-        'sigma2': sigma2,
-        't1': t1,
-        't2': t2,
-        'b1': b1,
-        'b2': b2,
-        'gamma': gamma,
-        'u0': u0,
-      };
-    },
+    isDone(){
+      return (this.materialName 
+        && !Number.isNaN(this.getConstants.t0)
+        && !Number.isNaN(this.getConstants.u0)
+        && !Number.isNaN(this.getConstants.gamma))
+    }
   },
 
 }

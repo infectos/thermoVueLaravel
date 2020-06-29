@@ -3,7 +3,9 @@
     <div class="col-2" v-if="savedList.length > 0">
       <ul class="list-group">
         <li class="list-group-item" v-for="(constant, index) in savedList">
-          {{JSON.parse(constant.body)}}
+          <h5>{{constant.name}}</h5>
+          <h6>{{JSON.parse(constant.body).function}}</h6>
+          <h6>{{constant.created_at}}</h6>
           <button type="button" class="btn btn-outline-light  deleteBtn" v-on:click="deleteFromServer(constant.id)">X</button>
         </li>
       </ul>
@@ -48,46 +50,46 @@ export default {
   data() {
     return {
       rawPointsLine: [{
-          "time": 3
+          "time": null
         }, {
-          "time": 4
+          "time": null
         }, {
-          "time": 42
+          "time": null
         }, {
-          "time": 1
+          "time": null
         }, {
-          "time": 1
+          "time": null
         }, {
-          "time": 2
+          "time": null
         }, {
-          "time": 2
+          "time": null
         }, {
-          "time": 1
+          "time": null
         }],
       rawPointsAdditionalPoint: [{
-          "time": 3
+          "time": null
         }, {
-          "time": 4
+          "time": null
         }, {
-          "time": 42
+          "time": null
         }, {
-          "time": 1
+          "time": null
         }, {
-          "time": 1
+          "time": null
         }, {
-          "time": 2
+          "time": null
         }, {
-          "time": 2
+          "time": null
         }, {
-          "time": 1
+          "time": null
         }, {
-          "time": 1
+          "time": null
         }, {
-          "time": 1
+          "time": null
         }, {
-          "time": 1
+          "time": null
         }, {
-          "time": 1
+          "time": null
         }],
       points: [
         {'tension':6.3,'average':0.472},
@@ -95,9 +97,11 @@ export default {
         {'tension':5.6,'average':1.526},
         {'tension':5.3,'average':2.54},
         {'tension':5.0,'average':3.656}
-      ],
-      additionalPoint: //{'tension':5.8,'average':0.7984},
-        {'tension':5.8,'average':0.7984},
+      ] 
+      //[]
+      ,
+      additionalPoint: {'tension':5.8,'average':0.7984},
+        //null,
       savedList: [],
       currentTab: 'line',
     }

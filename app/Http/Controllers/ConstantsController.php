@@ -36,9 +36,16 @@ class ConstantsController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate(['constantBody'=>'required']);
+        $request->validate([
+            'constantBody'=>'required',
+            'materialName'=>'required',
+        ]);
 
-        $constant = new Constant(['body' => $request->get('constantBody')]);
+        $constant = new Constant([
+            'body' => $request->get('constantBody'),
+            'name' => $request->get('materialName'),
+            'authorEmail' => $request->user()->email
+            ]);
         if (Gate::allows('create-constant')) {
             $constant->save();
         } else {
