@@ -82,7 +82,7 @@
 
             <div class="links">
                 
-                <a href="/home">Home</a>
+                <a href="/home">Расчет</a>
                 
             </div>
         </div>
