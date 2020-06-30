@@ -15,9 +15,8 @@ use Illuminate\Http\Request;
 */
 
 Route::get('/', function () {
-  $links = \App\Link::all();
   
-  return view('welcome', ['links' => $links]);
+  return view('welcome');
 });
 
 Auth::routes();
