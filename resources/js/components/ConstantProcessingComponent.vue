@@ -95,12 +95,12 @@ export default {
   props:{
     points: Array,
     additionalPoint: Object,
+    currentTemperature: [Number,null],
+    maxTemperature: [Number,null],
+    currentTemperatureAdditionalPoint: [Number,null]
   },
   data(){
     return {
-      currentTemperature: null,
-      maxTemperature: null,
-      currentTemperatureAdditionalPoint: null,
       materialName: null,
     }
   },
@@ -126,9 +126,10 @@ export default {
         }).then((response) => {
           console.log(response);
           this.$emit('refreshList');
-          $('#exampleModalCenter').modal('hide');
         }).catch(function (error) {
           console.log(error);
+        }).then(function (){
+          $('#exampleModalCenter').modal('hide');
         });
       } else {
         

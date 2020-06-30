@@ -26,10 +26,10 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Gate::define('create-constant', function ($user) {
-            return $user;
+            return $user->confirmed;
         });
-        Gate::define('delete-constant', function ($user) {
-            return $user;
+        Gate::define('delete-constant', function ($user, $constant) {
+            return $user->email === $constant->authorEmail;
         });
         Gate::define('confirm-users', function ($user) {
             return $user->isAdmin;

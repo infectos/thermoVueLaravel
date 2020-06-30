@@ -41,12 +41,12 @@ class ConstantsController extends Controller
             'materialName'=>'required',
         ]);
 
-        $constant = new Constant([
+        if (Gate::allows('create-constant')) {
+            $constant = new Constant([
             'body' => $request->get('constantBody'),
             'name' => $request->get('materialName'),
             'authorEmail' => $request->user()->email
             ]);
-        if (Gate::allows('create-constant')) {
             $constant->save();
         } else {
             return response('Access denided', 403)->header('Content-Type', 'text/plain');
@@ -97,7 +97,7 @@ class ConstantsController extends Controller
     public function destroy($id)
     {
         $constant = Constant::find($id);
-        if (Gate::allows('delete-constant')) {
+        if (Gate::allows('delete-constant', $constant)) {
             $constant->delete();
         } else {
             return response('Access denided', 403)->header('Content-Type', 'text/plain');
