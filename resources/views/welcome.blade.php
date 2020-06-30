@@ -81,9 +81,9 @@
             </div>
 
             <div class="links">
-                @foreach ($links as $link)
-                    <a href="{{ $link->url }}">{{ $link->title }}</a>
-                @endforeach
+                
+                <a href="/home">Home</a>
+                
             </div>
         </div>
     </div>
