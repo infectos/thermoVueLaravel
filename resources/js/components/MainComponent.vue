@@ -94,14 +94,16 @@ export default {
           "time": null
         }],
       loadedConstatns: {
-        points: [
+        points: /*[
           {'tension':6.3,'average':0.472},
           {'tension':5.9,'average':0.842},
           {'tension':5.6,'average':1.526},
           {'tension':5.3,'average':2.54},
           {'tension':5.0,'average':3.656}
-        ],
-        additionalPoint: {'tension':5.8,'average':0.7984},
+        ]*/
+        [],
+        additionalPoint: /*{'tension':5.8,'average':0.7984}*/
+        null,
         currentTemperature: null,
         maxTemperature: null,
         currentTemperatureAdditionalPoint: null,

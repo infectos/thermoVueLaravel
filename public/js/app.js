@@ -2112,29 +2112,27 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     saveConstants: function saveConstants() {
       var _this = this;
 
-      if (this.isDone) {
-        var ret = {};
-        ret.linePoints = this.points;
-        ret.additionalPoint = this.additionalPoint;
-        ret.name = this.materialName;
-        ret["function"] = this.getFunction.toString();
-        ret.lineTemperature = this.currentTemperature;
-        ret.maxTemperature = this.maxTemperature;
-        ret.additionalPointTemperature = this.currentTemperatureAdditionalPoint;
-        var jsonConstants = JSON.stringify(ret);
-        axios.post('constants', {
-          'constantBody': jsonConstants,
-          'materialName': this.materialName
-        }).then(function (response) {
-          console.log(response);
+      var ret = {};
+      ret.linePoints = this.points;
+      ret.additionalPoint = this.additionalPoint;
+      ret.name = this.materialName;
+      ret["function"] = this.getFunction.toString();
+      ret.lineTemperature = this.currentTemperature;
+      ret.maxTemperature = this.maxTemperature;
+      ret.additionalPointTemperature = this.currentTemperatureAdditionalPoint;
+      var jsonConstants = JSON.stringify(ret);
+      axios.post('constants', {
+        'constantBody': jsonConstants,
+        'materialName': this.materialName
+      }).then(function (response) {
+        console.log(response);
 
-          _this.$emit('refreshList');
-        })["catch"](function (error) {
-          console.log(error);
-        }).then(function () {
-          $('#exampleModalCenter').modal('hide');
-        });
-      } else {}
+        _this.$emit('refreshList');
+      })["catch"](function (error) {
+        console.log(error);
+      }).then(function () {
+        $('#exampleModalCenter').modal('hide');
+      });
     },
     getFromServer: function getFromServer() {
       axios.get('constants').then(function (response) {
@@ -2330,26 +2328,18 @@ __webpack_require__.r(__webpack_exports__);
         "time": null
       }],
       loadedConstatns: {
-        points: [{
-          'tension': 6.3,
-          'average': 0.472
-        }, {
-          'tension': 5.9,
-          'average': 0.842
-        }, {
-          'tension': 5.6,
-          'average': 1.526
-        }, {
-          'tension': 5.3,
-          'average': 2.54
-        }, {
-          'tension': 5.0,
-          'average': 3.656
-        }],
-        additionalPoint: {
-          'tension': 5.8,
-          'average': 0.7984
-        },
+        points:
+        /*[
+        {'tension':6.3,'average':0.472},
+        {'tension':5.9,'average':0.842},
+        {'tension':5.6,'average':1.526},
+        {'tension':5.3,'average':2.54},
+        {'tension':5.0,'average':3.656}
+        ]*/
+        [],
+        additionalPoint:
+        /*{'tension':5.8,'average':0.7984}*/
+        null,
         currentTemperature: null,
         maxTemperature: null,
         currentTemperatureAdditionalPoint: null

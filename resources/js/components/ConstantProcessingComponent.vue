@@ -109,7 +109,6 @@ export default {
       this.points.splice(index,1);
     },
     saveConstants(){
-      if (this.isDone) {
         let ret = {};
         ret.linePoints = this.points;
         ret.additionalPoint = this.additionalPoint;
@@ -131,9 +130,7 @@ export default {
         }).then(function (){
           $('#exampleModalCenter').modal('hide');
         });
-      } else {
-        
-      }
+      
     },
     getFromServer() {
     axios.get('constants')
