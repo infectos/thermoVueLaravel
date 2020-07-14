@@ -12,6 +12,7 @@
           </ul>
           <div>
             <h5 v-if="points.length > 4">{{getFunction}}</h5>
+            <h5 v-if="points.length > 4">r = {{getFunction.r.toFixed(3)}}</h5>
             <h5 v-else>{{howMuch}}</h5>
             <div class="input-group" v-if="points.length > 4">
               <div class="input-group-prepend">

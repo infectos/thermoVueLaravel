@@ -2091,6 +2091,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
@@ -39036,6 +39037,10 @@ var render = function() {
         _c("div", [
           _vm.points.length > 4
             ? _c("h5", [_vm._v(_vm._s(_vm.getFunction))])
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.points.length > 4
+            ? _c("h5", [_vm._v("r = " + _vm._s(_vm.getFunction.r.toFixed(3)))])
             : _c("h5", [_vm._v(_vm._s(_vm.howMuch))]),
           _vm._v(" "),
           _vm.points.length > 4
@@ -52348,6 +52353,36 @@ __webpack_require__.r(__webpack_exports__);
   var sumXY = 0;
   var sumXSq = 0;
   var N = X.length;
+  var averageX = X.reduce(function (a, b) {
+    return a + b;
+  }) / X.length;
+  var averageY = Y.reduce(function (a, b) {
+    return a + b;
+  }) / Y.length;
+  var xMinusXArray = X.map(function (item) {
+    return item - averageX;
+  });
+  var yMinusYArray = Y.map(function (item) {
+    return item - averageY;
+  });
+  var upper = 0;
+
+  for (var i = 0; i < N; ++i) {
+    upper += xMinusXArray[i] * yMinusYArray[i];
+  }
+
+  ;
+  var lower = xMinusXArray.map(function (i) {
+    return Math.pow(i, 2);
+  }).reduce(function (a, b) {
+    return a + b;
+  }) * yMinusYArray.map(function (i) {
+    return Math.pow(i, 2);
+  }).reduce(function (a, b) {
+    return a + b;
+  });
+  lower = Math.sqrt(lower);
+  ret.r = upper / lower;
 
   for (var i = 0; i < N; ++i) {
     sumX += X[i];

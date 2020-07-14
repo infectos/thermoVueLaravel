@@ -6,6 +6,23 @@ export default function (X, Y) {
  var sumXY = 0
  var sumXSq = 0
  var N = X.length
+ let averageX = X.reduce((a, b) => (a + b)) / X.length;
+ let averageY = Y.reduce((a, b) => (a + b)) / Y.length;
+
+ let xMinusXArray = X.map(item => {
+  return item - averageX;
+ });
+ let yMinusYArray = Y.map(item => {
+  return item - averageY;
+ });
+
+ let upper = 0;
+ for (var i = 0; i < N; ++i) {
+  upper += xMinusXArray[i] * yMinusYArray[i]
+ };
+ let lower = xMinusXArray.map(i=>Math.pow(i,2)).reduce((a, b) => (a + b)) * yMinusYArray.map(i=>Math.pow(i,2)).reduce((a, b) => (a + b));
+ lower = Math.sqrt(lower);
+ ret.r = upper/lower;
 
  for (var i = 0; i < N; ++i) {
    sumX += X[i]
