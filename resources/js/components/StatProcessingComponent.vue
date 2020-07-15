@@ -88,8 +88,8 @@ export default {
 
       let sx = s / Math.sqrt(givenArray.length);
 
-      const studentsTable95 = [null, null, null, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262, 2.228, 2.228, 2.179];
-      const studentsTable99 = [null, null, null, 5.841, 4.604, 4.032, 3.707, 2.998, 3.355, 3.25, 3.169, 3.169, 3.055];
+      const studentsTable95 = [null, null, null, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262, 2.228, 2.228, 2.179, 2.179, 2.145, 2.145, 2.12, 2.12, 2.101, 2.101, 2.086];
+      const studentsTable99 = [null, null, null, 5.841, 4.604, 4.032, 3.707, 2.998, 3.355, 3.25, 3.169, 3.169, 3.055, 3.055, 2.977, 2.977, 2.921, 2.921, 2.878, 2.878, 2.845];
       let studentsTable;
             
       if (this.selectStudent == "0.95") {
@@ -105,7 +105,7 @@ export default {
       });
       let message;
       if (cutArray.length > 0) {
-        message = `Значение(ия) ${cutArray} не лежит(ат) в доверительном интервале! Добавьте больше точек в выборку или подтвертите текущее значение.`;
+        message = `Значение(ия) ${cutArray} не лежит(ат) в доверительном интервале! Добавьте больше точек в выборку или подтвердите текущее значение.`;
       } else {
         message = `Все значения лежат в доверительном интервале`;
       }
@@ -145,8 +145,8 @@ export default {
       this.grabbs = this.findGrabbsError(arrayLog10);
     },
     findGrabbsError(array) {
-      const grabbsTable1 = [null, null, null, 1.155, 1.496, 1.764, 1.973, 2.139, 2.274, 2.387, 2.482, 2.564, 2.636];
-      const grabbsTable5 = [null, null, null, 1.155, 1.481, 1.715, 1.887, 2.02, 2.126, 2.215, 2.290, 2.355, 2.412];
+      const grabbsTable1 = [null, null, null, 1.155, 1.496, 1.764, 1.973, 2.139, 2.274, 2.387, 2.482, 2.564, 2.636, 2.699, 2.755, 2.809, 2.852, 2.894, 2.932, 2.968, 3.001];
+      const grabbsTable5 = [null, null, null, 1.155, 1.481, 1.715, 1.887, 2.02, 2.126, 2.215, 2.290, 2.355, 2.412, 2.462, 2.507, 2.549, 2.585, 2.620, 2.651, 2.681, 2.709];
 
       let average = array.reduce((a, b) => (a + b), 0) / array.length;
       let upper = array.map(item => Math.pow((item - average), 2));
