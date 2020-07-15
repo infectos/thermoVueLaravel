@@ -2511,8 +2511,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return a + b;
       }, 0) / lower);
       var sx = s / Math.sqrt(givenArray.length);
-      var studentsTable95 = [null, null, null, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262, 2.228, 2.228, 2.179];
-      var studentsTable99 = [null, null, null, 5.841, 4.604, 4.032, 3.707, 2.998, 3.355, 3.25, 3.169, 3.169, 3.055];
+      var studentsTable95 = [null, null, null, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262, 2.228, 2.228, 2.179, 2.179, 2.145, 2.145, 2.12, 2.12, 2.101, 2.101, 2.086];
+      var studentsTable99 = [null, null, null, 5.841, 4.604, 4.032, 3.707, 2.998, 3.355, 3.25, 3.169, 3.169, 3.055, 3.055, 2.977, 2.977, 2.921, 2.921, 2.878, 2.878, 2.845];
       var studentsTable;
 
       if (this.selectStudent == "0.95") {
@@ -2529,7 +2529,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var message;
 
       if (cutArray.length > 0) {
-        message = "\u0417\u043D\u0430\u0447\u0435\u043D\u0438\u0435(\u0438\u044F) ".concat(cutArray, " \u043D\u0435 \u043B\u0435\u0436\u0438\u0442(\u0430\u0442) \u0432 \u0434\u043E\u0432\u0435\u0440\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u043C \u0438\u043D\u0442\u0435\u0440\u0432\u0430\u043B\u0435! \u0414\u043E\u0431\u0430\u0432\u044C\u0442\u0435 \u0431\u043E\u043B\u044C\u0448\u0435 \u0442\u043E\u0447\u0435\u043A \u0432 \u0432\u044B\u0431\u043E\u0440\u043A\u0443 \u0438\u043B\u0438 \u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0442\u0438\u0442\u0435 \u0442\u0435\u043A\u0443\u0449\u0435\u0435 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435.");
+        message = "\u0417\u043D\u0430\u0447\u0435\u043D\u0438\u0435(\u0438\u044F) ".concat(cutArray.join(', '), " \u043D\u0435 \u043B\u0435\u0436\u0438\u0442(\u0430\u0442) \u0432 \u0434\u043E\u0432\u0435\u0440\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u043C \u0438\u043D\u0442\u0435\u0440\u0432\u0430\u043B\u0435! \u0414\u043E\u0431\u0430\u0432\u044C\u0442\u0435 \u0431\u043E\u043B\u044C\u0448\u0435 \u0442\u043E\u0447\u0435\u043A \u0432 \u0432\u044B\u0431\u043E\u0440\u043A\u0443 \u0438\u043B\u0438 \u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u0435 \u0442\u0435\u043A\u0443\u0449\u0435\u0435 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435.");
       } else {
         message = "\u0412\u0441\u0435 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F \u043B\u0435\u0436\u0430\u0442 \u0432 \u0434\u043E\u0432\u0435\u0440\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u043C \u0438\u043D\u0442\u0435\u0440\u0432\u0430\u043B\u0435";
       }
@@ -2578,8 +2578,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.grabbs = this.findGrabbsError(arrayLog10);
     },
     findGrabbsError: function findGrabbsError(array) {
-      var grabbsTable1 = [null, null, null, 1.155, 1.496, 1.764, 1.973, 2.139, 2.274, 2.387, 2.482, 2.564, 2.636];
-      var grabbsTable5 = [null, null, null, 1.155, 1.481, 1.715, 1.887, 2.02, 2.126, 2.215, 2.290, 2.355, 2.412];
+      var grabbsTable1 = [null, null, null, 1.155, 1.496, 1.764, 1.973, 2.139, 2.274, 2.387, 2.482, 2.564, 2.636, 2.699, 2.755, 2.809, 2.852, 2.894, 2.932, 2.968, 3.001];
+      var grabbsTable5 = [null, null, null, 1.155, 1.481, 1.715, 1.887, 2.02, 2.126, 2.215, 2.290, 2.355, 2.412, 2.462, 2.507, 2.549, 2.585, 2.620, 2.651, 2.681, 2.709];
       var average = array.reduce(function (a, b) {
         return a + b;
       }, 0) / array.length;
