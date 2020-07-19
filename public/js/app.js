@@ -38998,7 +38998,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "col" }, [
+  return _c("div", { staticClass: "col-md" }, [
     _c("div", { staticClass: "card" }, [
       _c("div", { staticClass: "card-body" }, [
         _c("h5", { staticClass: "card-title" }, [_vm._v("Набор точек прямой")]),
@@ -39373,7 +39373,7 @@ var render = function() {
     _vm.savedList.length > 0
       ? _c(
           "div",
-          { staticClass: "col-2" },
+          { staticClass: "col-lg-2" },
           [
             _c("constant-list-component", {
               attrs: { savedList: _vm.savedList },
@@ -39387,7 +39387,7 @@ var render = function() {
         )
       : _vm._e(),
     _vm._v(" "),
-    _c("div", { staticClass: "col-10" }, [
+    _c("div", { staticClass: "col-lg-10" }, [
       _c("div", { staticClass: "card" }, [
         _c("div", { staticClass: "card-header" }, [_vm._v("Расчет")]),
         _vm._v(" "),
@@ -39396,7 +39396,7 @@ var render = function() {
             "div",
             { staticClass: "row" },
             [
-              _c("div", { staticClass: "col" }, [
+              _c("div", { staticClass: "col-md" }, [
                 _c("nav", [
                   _c(
                     "div",

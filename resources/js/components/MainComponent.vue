@@ -1,14 +1,14 @@
 <template>
   <div class="row justify-content-center">
-    <div class="col-2" v-if="savedList.length > 0">
+    <div class="col-lg-2" v-if="savedList.length > 0">
       <constant-list-component v-bind:savedList="savedList" @deleteFromServer="deleteFromServer" @loadConstants="loadConstants"></constant-list-component>
     </div>
-    <div class="col-10">
+    <div class="col-lg-10">
       <div class="card">
         <div class="card-header">Расчет</div>
         <div class="card-body">
           <div class="row">
-            <div class="col">
+            <div class="col-md">
               <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                   <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true" @click="currentTab = 'line'">Прямая</a>

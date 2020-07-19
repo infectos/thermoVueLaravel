@@ -1,5 +1,5 @@
 <template>
-  <div class="col">
+  <div class="col-md">
     <div class="card">
         <div class="card-body">
           <h5 class="card-title">Набор точек прямой</h5>
