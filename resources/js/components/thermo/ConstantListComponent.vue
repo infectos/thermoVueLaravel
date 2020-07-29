@@ -62,7 +62,8 @@ export default {
 
 <style scoped>
 .list-group {
-  height: 100vh;
+  height: 100%;
+  max-height: 100vh;
   overflow: auto;
 }
 </style>

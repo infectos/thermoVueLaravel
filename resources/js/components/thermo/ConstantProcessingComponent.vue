@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import leastSquares from "../leastSquares.js";
+import leastSquares from "../../leastSquares.js";
 export default {
   props:{
     points: Array,

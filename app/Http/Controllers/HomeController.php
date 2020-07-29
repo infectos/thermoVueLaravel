@@ -21,8 +21,13 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function thermo()
     {
-        return view('home');
+        return view('thermo');
+    }
+    
+    public function music()
+    {
+        return view('music');
     }
 }
