@@ -11,9 +11,15 @@
             </li>
           </ul>
           <div>
-            <h5 v-if="points.length > 4">{{getFunction}}</h5>
-            <h5 v-if="points.length > 4">r = {{getFunction.r.toFixed(3)}}</h5>
-            <h5 v-else>{{howMuch}}</h5>
+            <div v-if="points.length > 4">
+              <h5 v-if='validateData.message !== null'>{{validateData.message}}</h5>
+              <h5 v-else>{{getFunction}}</h5>
+              <h5 v-else>r = {{getFunction.r.toFixed(3)}}</h5>
+            </div>
+            <div v-else>
+              <h5>{{howMuch}}</h5>
+            </div>
+
             <div class="input-group" v-if="points.length > 4">
               <div class="input-group-prepend">
                 <span class="input-group-text">Температура, [°C]</span>
@@ -65,7 +71,7 @@
     </table>
 
     <!-- Button trigger modal -->
-    <button v-if="additionalPoint && points.length > 4 && currentTemperature && maxTemperature && currentTemperatureAdditionalPoint" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Сохранить в системе</button>
+    <button v-if="additionalPoint && points.length > 4 && getConstants !== null && getConstants.isAll " type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Сохранить в системе</button>
     
     <!-- Modal -->
     <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -149,6 +155,10 @@ export default {
     getFunction() {
       let tensions = this.points.map(d => Number(d.tension));
       let times = this.points.map(d => Number(d.average));
+      if (tensions.length == 0) {
+        return null;
+      }
+
       let func = leastSquares(tensions, times);
       return func;
     },
@@ -164,7 +174,42 @@ export default {
       }
       return `Для расчета констант добавьте еще ${difference} ` + endOfMessage;
     },
+    validateData(){
+      let arr = this.points;
+
+      let resultReduce = arr.reduce(function(acc, cur) {
+        if (!acc.hash[cur.tension]) {
+          acc.hash[cur.tension] = { [cur.tension]: 1 };
+          acc.map.set(acc.hash[cur.tension], 1);
+          acc.result.push(acc.hash[cur.tension]);
+        } else {
+          acc.hash[cur.tension][cur.tension] += 1;
+          acc.map.set(acc.hash[cur.tension], acc.hash[cur.tension][cur.tension]);
+        }
+        return acc;
+      }, {
+        hash: {},
+        map: new Map(),
+        result: []
+      });
+
+      let result = resultReduce.result.sort(function(a, b) {
+        return resultReduce.map.get(b) - resultReduce.map.get(a);
+      });
+      let output = {
+        array: result,
+        message: null,
+      };
+      if (result.some(e=> Object.values(e) > 1)) {
+        output.message = 'Удалите точки с одинаковым напряжением!';
+      }
+      return output;
+    },
+
     getConstants() {
+      if (this.getFunction === null || this.getFunction.b === NaN || this.getFunction.m === NaN) {
+        return null;
+      }
       let temperature = this.currentTemperature + 273;
       let maxTemperature = this.maxTemperature + 273;
       

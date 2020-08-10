@@ -2,10 +2,10 @@
   <div>
     <div class='input'>
       <ol>
-        <input v-model.number='tension' type='number' step='any'> Напряжение,[МПа]
+        <input v-model.number='tension' type='number' step='any' min='0'> Напряжение,[МПа]
         <hr>
         <li v-for="(point, index) in rawPoints">
-        <input v-model.number='point.time' type='number'> Время,[с]
+        <input v-model.number='point.time' type='number' min="1"> Время,[с]
         <button type="button" class="btn btn-outline-light btn-sm" v-if="rawPoints.length > minPointQuantity"
           v-on:click="removePoint(index)">X</button>
         </li>
@@ -58,6 +58,29 @@
       <h6 v-bind:class="stat.cutArray.length > 0 ? 'text-danger' : 'text-success'">{{stat.message}}</h6>
       <button class="btn btn-warning" v-if='stat.cutArray.length > 0 && !isConfirmed' v-on:click="confirmPoint">Подтвердить точку</button>
     </div>
+    <!-- Modal -->
+
+    <div class="modal fade" id="incorrectDataModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalCenterTitle">Данные неправильно заполнены</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <ul>
+              <li v-for="error in dataErrors">{{error}}</li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -70,6 +93,7 @@ export default {
   data:function () {
     return {
       tension: null,
+      dataErrors: [],
       grabbs: null,
       isConfirmed: false,
       selectGrabbs:"Свыше 1%",
@@ -139,6 +163,25 @@ export default {
       this.rawPoints.splice(index,1);
     },
     processData(){
+      this.dataErrors = [];
+      if (this.tension < 0 || this.tension === null) {
+        this.dataErrors.push('Напряжение должно быть больше 0 мегапаскалей.');
+      }
+      if (this.rawPoints.some( e => e.time < 1) ) {
+        this.dataErrors.push('Любое время должно быть больше 1 секунды.');
+      }
+      if (this.rawPoints.filter( e => e.time >= 1 ).length < this.minPointQuantity) {
+        this.dataErrors.push(`Требуется не менее ${this.minPointQuantity} замеров времен.`);
+        console.log(this.rawPoints.filter( e => e.time >= 1 ));
+      }
+
+      if (this.dataErrors.length > 0) {
+        $('#incorrectDataModal').modal({
+          show: true,
+        })
+        return
+      }
+
       this.isConfirmed = false;
       let arraySec = this.rawPoints.filter(e => e.time > 0).map(e => e.time);
       let arrayLog10 = arraySec.map(e => Number(Math.log10(e).toFixed(3)));

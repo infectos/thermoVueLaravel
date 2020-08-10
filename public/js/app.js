@@ -2087,8 +2087,6 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _leastSquares_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../leastSquares.js */ "./resources/js/leastSquares.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -2101,6 +2099,14 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2254,6 +2260,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var times = this.points.map(function (d) {
         return Number(d.average);
       });
+
+      if (tensions.length == 0) {
+        return null;
+      }
+
       var func = Object(_leastSquares_js__WEBPACK_IMPORTED_MODULE_0__["default"])(tensions, times);
       return func;
     },
@@ -2271,8 +2282,46 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
       return "\u0414\u043B\u044F \u0440\u0430\u0441\u0447\u0435\u0442\u0430 \u043A\u043E\u043D\u0441\u0442\u0430\u043D\u0442 \u0434\u043E\u0431\u0430\u0432\u044C\u0442\u0435 \u0435\u0449\u0435 ".concat(difference, " ") + endOfMessage;
     },
+    validateData: function validateData() {
+      var arr = this.points;
+      var resultReduce = arr.reduce(function (acc, cur) {
+        if (!acc.hash[cur.tension]) {
+          acc.hash[cur.tension] = _defineProperty({}, cur.tension, 1);
+          acc.map.set(acc.hash[cur.tension], 1);
+          acc.result.push(acc.hash[cur.tension]);
+        } else {
+          acc.hash[cur.tension][cur.tension] += 1;
+          acc.map.set(acc.hash[cur.tension], acc.hash[cur.tension][cur.tension]);
+        }
+
+        return acc;
+      }, {
+        hash: {},
+        map: new Map(),
+        result: []
+      });
+      var result = resultReduce.result.sort(function (a, b) {
+        return resultReduce.map.get(b) - resultReduce.map.get(a);
+      });
+      var output = {
+        array: result,
+        message: null
+      };
+
+      if (result.some(function (e) {
+        return Object.values(e) > 1;
+      })) {
+        output.message = 'Удалите точки с одинаковым напряжением!';
+      }
+
+      return output;
+    },
     getConstants: function getConstants() {
       var _ref;
+
+      if (this.getFunction === null || this.getFunction.b === NaN || this.getFunction.m === NaN) {
+        return null;
+      }
 
       var temperature = this.currentTemperature + 273;
       var maxTemperature = this.maxTemperature + 273;
@@ -2584,6 +2633,29 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     minPointQuantity: Number,
@@ -2592,6 +2664,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   data: function data() {
     return {
       tension: null,
+      dataErrors: [],
       grabbs: null,
       isConfirmed: false,
       selectGrabbs: "Свыше 1%",
@@ -2667,6 +2740,34 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.rawPoints.splice(index, 1);
     },
     processData: function processData() {
+      this.dataErrors = [];
+
+      if (this.tension < 0 || this.tension === null) {
+        this.dataErrors.push('Напряжение должно быть больше 0 мегапаскалей.');
+      }
+
+      if (this.rawPoints.some(function (e) {
+        return e.time < 1;
+      })) {
+        this.dataErrors.push('Любое время должно быть больше 1 секунды.');
+      }
+
+      if (this.rawPoints.filter(function (e) {
+        return e.time >= 1;
+      }).length < this.minPointQuantity) {
+        this.dataErrors.push("\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u043D\u0435 \u043C\u0435\u043D\u0435\u0435 ".concat(this.minPointQuantity, " \u0437\u0430\u043C\u0435\u0440\u043E\u0432 \u0432\u0440\u0435\u043C\u0435\u043D."));
+        console.log(this.rawPoints.filter(function (e) {
+          return e.time >= 1;
+        }));
+      }
+
+      if (this.dataErrors.length > 0) {
+        $('#incorrectDataModal').modal({
+          show: true
+        });
+        return;
+      }
+
       this.isConfirmed = false;
       var arraySec = this.rawPoints.filter(function (e) {
         return e.time > 0;
@@ -68642,12 +68743,12 @@ var render = function() {
         _vm._v(" "),
         _c("div", [
           _vm.points.length > 4
-            ? _c("h5", [_vm._v(_vm._s(_vm.getFunction))])
-            : _vm._e(),
-          _vm._v(" "),
-          _vm.points.length > 4
-            ? _c("h5", [_vm._v("r = " + _vm._s(_vm.getFunction.r.toFixed(3)))])
-            : _c("h5", [_vm._v(_vm._s(_vm.howMuch))]),
+            ? _c("div", [
+                _vm.validateData.message !== null
+                  ? _c("h5", [_vm._v(_vm._s(_vm.validateData.message))])
+                  : _c("h5", [_vm._v(_vm._s(_vm.getFunction))])
+              ])
+            : _c("div", [_c("h5", [_vm._v(_vm._s(_vm.howMuch))])]),
           _vm._v(" "),
           _vm.points.length > 4
             ? _c("div", { staticClass: "input-group" }, [
@@ -68790,9 +68891,8 @@ var render = function() {
     _vm._v(" "),
     _vm.additionalPoint &&
     _vm.points.length > 4 &&
-    _vm.currentTemperature &&
-    _vm.maxTemperature &&
-    _vm.currentTemperatureAdditionalPoint
+    _vm.getConstants !== null &&
+    _vm.getConstants.isAll
       ? _c(
           "button",
           {
@@ -69147,7 +69247,7 @@ var render = function() {
                 modifiers: { number: true }
               }
             ],
-            attrs: { type: "number", step: "any" },
+            attrs: { type: "number", step: "any", min: "0" },
             domProps: { value: _vm.tension },
             on: {
               input: function($event) {
@@ -69176,7 +69276,7 @@ var render = function() {
                     modifiers: { number: true }
                   }
                 ],
-                attrs: { type: "number" },
+                attrs: { type: "number", min: "1" },
                 domProps: { value: point.time },
                 on: {
                   input: function($event) {
@@ -69376,10 +69476,94 @@ var render = function() {
               )
             : _vm._e()
         ])
-      : _vm._e()
+      : _vm._e(),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "modal fade",
+        attrs: {
+          id: "incorrectDataModal",
+          tabindex: "-1",
+          role: "dialog",
+          "aria-labelledby": "exampleModalCenterTitle",
+          "aria-hidden": "true"
+        }
+      },
+      [
+        _c(
+          "div",
+          {
+            staticClass: "modal-dialog modal-dialog-centered",
+            attrs: { role: "document" }
+          },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _vm._m(0),
+              _vm._v(" "),
+              _c("div", { staticClass: "modal-body" }, [
+                _c(
+                  "ul",
+                  _vm._l(_vm.dataErrors, function(error) {
+                    return _c("li", [_vm._v(_vm._s(error))])
+                  }),
+                  0
+                )
+              ]),
+              _vm._v(" "),
+              _vm._m(1)
+            ])
+          ]
+        )
+      ]
+    )
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c(
+        "h5",
+        {
+          staticClass: "modal-title",
+          attrs: { id: "exampleModalCenterTitle" }
+        },
+        [_vm._v("Данные неправильно заполнены")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-footer" }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-secondary",
+          attrs: { type: "button", "data-dismiss": "modal" }
+        },
+        [_vm._v("Закрыть")]
+      )
+    ])
+  }
+]
 render._withStripped = true
 
 
