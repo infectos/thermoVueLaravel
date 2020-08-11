@@ -1,7 +1,7 @@
 <template>
   <div class="row justify-content-center">
     <div class="col-lg-2" v-if="savedList.length > 0">
-      <constant-list-component v-bind:savedList="savedList" @deleteFromServer="deleteFromServer" @loadConstants="loadConstants"></constant-list-component>
+      <constant-list-component v-bind:originList="savedList" @deleteFromServer="deleteFromServer" @loadConstants="loadConstants"></constant-list-component>
     </div>
     <div class="col-lg-10">
       <div class="card">

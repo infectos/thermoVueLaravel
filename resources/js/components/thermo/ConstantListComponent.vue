@@ -1,7 +1,7 @@
 <template>
  <div>
   <div class="input-group mb-3">
-    <input type="text" class="form-control" placeholder="Поиск по названию" aria-label="Поиск по названию" aria-describedby="basic-addon2" v-model="search">
+    <input type="text" class="form-control" placeholder="Название" aria-label="Поиск по названию" aria-describedby="basic-addon2" v-model="search">
     <div class="input-group-append">
       <button class="btn btn-outline-secondary" type="button" @click="sortByName">Найти</button>
     </div>
@@ -22,12 +22,13 @@
 export default {
  name: 'ConstantListComponent',
  props: {
-  savedList: Array,
+  originList: Array,
  },
  data(){
   return {
     search: null,
     activeTab: null,
+    savedList: this.originList,
   }
  },
  methods: {
@@ -35,9 +36,10 @@ export default {
    this.$emit('deleteFromServer', id);
   },
   sortByName() {
-   this.savedList = this.savedList.filter(item => {
-    return item.name == this.search;
+   this.savedList = this.originList.filter(item => {
+    return item.name.toLowerCase().includes(this.search.toLowerCase());
    });
+   this.activeTab = null;
   },
   findDate(stringDate) {
     let date = Date.parse(stringDate);
@@ -63,7 +65,8 @@ export default {
 <style scoped>
 .list-group {
   height: 100%;
-  max-height: 100vh;
+  max-height: 80vh;
   overflow: auto;
+  margin-bottom: 15px;
 }
 </style>

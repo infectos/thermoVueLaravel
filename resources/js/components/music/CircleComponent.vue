@@ -67,6 +67,7 @@ export default {
 .chord-btn {
   fill: rgba(0, 0, 0, 0.5);
   font-weight: bold;
+  transition-duration: .5s;
 }
 .chord-btn:hover {
   cursor: pointer;

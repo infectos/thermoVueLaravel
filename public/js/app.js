@@ -2032,12 +2032,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'ConstantListComponent',
   props: {
-    savedList: Array
+    originList: Array
   },
   data: function data() {
     return {
       search: null,
-      activeTab: null
+      activeTab: null,
+      savedList: this.originList
     };
   },
   methods: {
@@ -2047,9 +2048,10 @@ __webpack_require__.r(__webpack_exports__);
     sortByName: function sortByName() {
       var _this = this;
 
-      this.savedList = this.savedList.filter(function (item) {
-        return item.name == _this.search;
+      this.savedList = this.originList.filter(function (item) {
+        return item.name.toLowerCase().includes(_this.search.toLowerCase());
       });
+      this.activeTab = null;
     },
     findDate: function findDate(stringDate) {
       var date = Date.parse(stringDate);
@@ -7297,7 +7299,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n.chord-btn[data-v-9447f170] {\n  fill: rgba(0, 0, 0, 0.5);\n  font-weight: bold;\n}\n.chord-btn[data-v-9447f170]:hover {\n  cursor: pointer;\n  fill: rgba(0, 0, 0, 0.9);\n}\n.active[data-v-9447f170] {\n  fill: rgba(0, 0, 0, 0.9);\n}\n", ""]);
+exports.push([module.i, "\n.chord-btn[data-v-9447f170] {\n  fill: rgba(0, 0, 0, 0.5);\n  font-weight: bold;\n  transition-duration: .5s;\n}\n.chord-btn[data-v-9447f170]:hover {\n  cursor: pointer;\n  fill: rgba(0, 0, 0, 0.9);\n}\n.active[data-v-9447f170] {\n  fill: rgba(0, 0, 0, 0.9);\n}\n", ""]);
 
 // exports
 
@@ -7316,7 +7318,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n.list-group[data-v-3a7fd54c] {\n  height: 100%;\n  max-height: 100vh;\n  overflow: auto;\n}\n", ""]);
+exports.push([module.i, "\n.list-group[data-v-3a7fd54c] {\n  height: 100%;\n  max-height: 80vh;\n  overflow: auto;\n  margin-bottom: 15px;\n}\n", ""]);
 
 // exports
 
@@ -68611,7 +68613,7 @@ var render = function() {
         staticClass: "form-control",
         attrs: {
           type: "text",
-          placeholder: "Поиск по названию",
+          placeholder: "Название",
           "aria-label": "Поиск по названию",
           "aria-describedby": "basic-addon2"
         },
@@ -69082,7 +69084,7 @@ var render = function() {
           { staticClass: "col-lg-2" },
           [
             _c("constant-list-component", {
-              attrs: { savedList: _vm.savedList },
+              attrs: { originList: _vm.savedList },
               on: {
                 deleteFromServer: _vm.deleteFromServer,
                 loadConstants: _vm.loadConstants
