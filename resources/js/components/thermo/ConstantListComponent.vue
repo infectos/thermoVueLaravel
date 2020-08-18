@@ -28,7 +28,6 @@ export default {
   return {
     search: null,
     activeTab: null,
-    savedList: this.originList,
   }
  },
  methods: {
@@ -57,8 +56,14 @@ export default {
     let constants = this.savedList[index];
     constants = JSON.parse(constants.body);
     this.$emit('loadConstants', constants);
-  }
+  },
  },
+ computed: {
+   savedList() {
+     let savedList = this.originList;
+     return savedList;
+   }
+ }
 }
 </script>
 

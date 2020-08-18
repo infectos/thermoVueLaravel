@@ -1936,8 +1936,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       search: null,
-      activeTab: null,
-      savedList: this.originList
+      activeTab: null
     };
   },
   methods: {
@@ -1972,6 +1971,12 @@ __webpack_require__.r(__webpack_exports__);
       var constants = this.savedList[index];
       constants = JSON.parse(constants.body);
       this.$emit('loadConstants', constants);
+    }
+  },
+  computed: {
+    savedList: function savedList() {
+      var savedList = this.originList;
+      return savedList;
     }
   }
 });
