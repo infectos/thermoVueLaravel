@@ -74,4 +74,9 @@ export default {
   overflow: auto;
   margin-bottom: 15px;
 }
+
+h5,
+h6 {
+  overflow: hidden;
+}
 </style>

@@ -7203,7 +7203,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n.list-group[data-v-3a7fd54c] {\n  height: 100%;\n  max-height: 78vh;\n  overflow: auto;\n  margin-bottom: 15px;\n}\n", ""]);
+exports.push([module.i, "\n.list-group[data-v-3a7fd54c] {\n  height: 100%;\n  max-height: 78vh;\n  overflow: auto;\n  margin-bottom: 15px;\n}\nh5[data-v-3a7fd54c],\nh6[data-v-3a7fd54c] {\n  overflow: hidden;\n}\n", ""]);
 
 // exports
 
