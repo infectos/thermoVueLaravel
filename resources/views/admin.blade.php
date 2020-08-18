@@ -10,10 +10,10 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th>id</th>
-                            <th>Name</th>
-                            <th>IsConfirmed?</th>
-                            <th>Action</th>
+                            <th>Id</th>
+                            <th>Имя</th>
+                            <th>Подтвержден?</th>
+                            <th>Действие</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -23,7 +23,7 @@
                                 <td>{{ $user->name }}</td>
                                 <td>{{ $user->confirmed }}</td>
                                 <td style="text-align:right;">
-                                    <a href="/admin/confirm/{{ $user->id }}" class="btn btn-primary">Confirm</a>
+                                    <a href="/admin/confirm/{{ $user->id }}" class="btn btn-primary">Подтвердить</a>
                                 </td>
                             </tr>
                         @endforeach

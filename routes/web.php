@@ -16,13 +16,12 @@ use Illuminate\Http\Request;
 
 Route::get('/', function () {
   
-  return view('welcome');
+  return view('thermo');
 });
 
 Auth::routes();
 
 Route::get('/thermo', 'HomeController@thermo')->name('thermo');
-Route::get('/music', 'HomeController@music')->name('music');
 
 Route::get('/admin', 'AdminController@index');
 Route::get('/admin/confirm/{id}', 'AdminController@confirmUser');

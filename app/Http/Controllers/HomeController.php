@@ -25,9 +25,5 @@ class HomeController extends Controller
     {
         return view('thermo');
     }
-    
-    public function music()
-    {
-        return view('music');
-    }
+
 }
