@@ -2,9 +2,6 @@
  <div>
   <div class="input-group mb-3">
     <input type="text" class="form-control" placeholder="Название" aria-label="Поиск по названию" aria-describedby="basic-addon2" v-model="search">
-    <div class="input-group-append">
-      <button class="btn btn-outline-secondary" type="button" @click="sortByName">Найти</button>
-    </div>
   </div>
   <ul class="list-group">
    <li class="list-group-item list-group-item-action" v-for="(constant, index) in savedList" @click="loadConstants(index)" v-bind:class="{active: activeTab === index}">
@@ -34,12 +31,6 @@ export default {
   deleteFromServer(id) {
    this.$emit('deleteFromServer', id);
   },
-  sortByName() {
-   this.savedList = this.originList.filter(item => {
-    return item.name.toLowerCase().includes(this.search.toLowerCase());
-   });
-   this.activeTab = null;
-  },
   findDate(stringDate) {
     let date = Date.parse(stringDate);
     date = new Date(date);
@@ -60,8 +51,14 @@ export default {
  },
  computed: {
    savedList() {
-     let savedList = this.originList;
-     return savedList;
+     if (this.search) {
+       let filteredList = this.originList.filter(item => {
+          return item.name.toLowerCase().includes(this.search.toLowerCase());
+        });
+       return filteredList;
+     } else {
+       return this.originList;
+     }
    }
  }
 }

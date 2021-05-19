@@ -1925,9 +1925,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'ConstantListComponent',
   props: {
@@ -1942,14 +1939,6 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     deleteFromServer: function deleteFromServer(id) {
       this.$emit('deleteFromServer', id);
-    },
-    sortByName: function sortByName() {
-      var _this = this;
-
-      this.savedList = this.originList.filter(function (item) {
-        return item.name.toLowerCase().includes(_this.search.toLowerCase());
-      });
-      this.activeTab = null;
     },
     findDate: function findDate(stringDate) {
       var date = Date.parse(stringDate);
@@ -1975,8 +1964,16 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     savedList: function savedList() {
-      var savedList = this.originList;
-      return savedList;
+      var _this = this;
+
+      if (this.search) {
+        var filteredList = this.originList.filter(function (item) {
+          return item.name.toLowerCase().includes(_this.search.toLowerCase());
+        });
+        return filteredList;
+      } else {
+        return this.originList;
+      }
     }
   }
 });
@@ -39025,19 +39022,7 @@ var render = function() {
             _vm.search = $event.target.value
           }
         }
-      }),
-      _vm._v(" "),
-      _c("div", { staticClass: "input-group-append" }, [
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-outline-secondary",
-            attrs: { type: "button" },
-            on: { click: _vm.sortByName }
-          },
-          [_vm._v("Найти")]
-        )
-      ])
+      })
     ]),
     _vm._v(" "),
     _c(
